@@ -70,7 +70,8 @@ def main():
     api.attach(window)
     window.events.closing += lambda: api._queue.shutdown()
     window.events.shown += lambda: _set_window_icon(window)
-    webview.start(debug=debug, http_server=True, private_mode=False,
+    # private_mode: no persistent WebView cache, so an update is never hidden behind stale CSS/JS
+    webview.start(debug=debug, http_server=True, private_mode=True,
                   storage_path=os.path.join(store.DATA_DIR, "webview"))
 
 

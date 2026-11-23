@@ -41,14 +41,23 @@
     return r;
   }
 
+  // DESIGN.md §3.3: every piece carries its own full metal gradient. Long repo names
+  // ("Qwen3.5-9B-…-GGUF") are one "word", so they also split after hyphens, dots and
+  // underscores. Each piece can then wrap on its own without the gradient stretching
+  // across two lines.
   function splitWords(el) {
     if (el.classList.contains('is-split')) return;
     const words = el.textContent.trim().split(/\s+/);
     el.textContent = '';
-    words.forEach((w, i) => {
-      const s = document.createElement('span');
-      s.className = 'word'; s.style.setProperty('--i', i); s.textContent = w;
-      el.append(s, i < words.length - 1 ? ' ' : '');
+    let i = 0;
+    words.forEach((w, wi) => {
+      const pieces = w.length > 14 ? w.split(/(?<=[-_.])/) : [w];
+      pieces.forEach((p) => {
+        const s = document.createElement('span');
+        s.className = 'word'; s.style.setProperty('--i', i++); s.textContent = p;
+        el.append(s);
+      });
+      if (wi < words.length - 1) el.append(' ');
     });
     el.classList.add('is-split');
   }
@@ -78,7 +87,7 @@
     state.view = view;
     $$('[data-pane]').forEach((p) => p.classList.toggle('is-active', p.dataset.pane === view));
     $$('.rail__btn').forEach((b) => b.classList.toggle('is-active', b.dataset.view === (view === 'repo' ? 'search' : view)));
-    window.DPMist?.level(view === 'search' && !state.q ? 0.38 : 0.2);
+    window.DPMist?.level(view === 'search' && !state.q ? 0.32 : 0.2);
     if (view === 'library') loadLibrary();
     if (view === 'settings') renderSettings();
     if (view === 'queue') renderQueue();
@@ -141,7 +150,7 @@
     const q = state.q.trim();
     const seq = ++state.seq;
     $('[data-hero]').hidden = !!q;
-    window.DPMist?.level(state.view === 'search' && !q ? 0.38 : 0.2);
+    window.DPMist?.level(state.view === 'search' && !q ? 0.32 : 0.2);
     const box = $('[data-results]');
     if (looksLikeLink(q)) {
       const link = await call('parse_link', q).catch(() => null);
@@ -435,11 +444,11 @@
       if (!e) continue;
       const vram = state.avail?.vram ?? 0;
       let lvl, det;
-      if (e.level === 'fits') { lvl = 'Fits'; det = `Fully on GPU · needs ${gb(e.need)} of ${gb(vram)}`; }
+      if (e.level === 'fits') { lvl = 'Fits'; det = `Fully on GPU · needs ${gb(e.need)} of ${gb(e.vram_usable ?? vram)} usable`; }
       else if (e.level === 'partial') {
         lvl = 'Partial';
         det = e.gpu_layers == null ? `Needs ${gb(e.need)}; spills to RAM` : e.gpu_layers === 0 ? `CPU only · needs ${gb(e.need)}` : `~${e.gpu_layers}/${e.layers} layers on GPU · needs ${gb(e.need)}`;
-      } else { lvl = "Won't run"; det = `Needs ${gb(e.need)} · you have ${gb(vram + (state.avail?.ram ?? 0))}`; }
+      } else { lvl = "Won't run"; det = `Needs ${gb(e.need)} · ${gb(e.usable)} usable (VRAM + RAM)`; }
       const approx = e.approx ? ' (rough)' : '';
       const cls = e.level === 'none' ? 'none' : e.level;
       const gauge = e.level === 'partial' && e.gpu_layers != null && e.layers ? Math.max(8, Math.round((e.gpu_layers / e.layers) * 100)) : null;

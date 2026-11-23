@@ -43,7 +43,7 @@ def _path(name: str) -> str:
 
 def _load(name: str, default):
     try:
-        with open(_path(name), encoding="utf-8") as f:
+        with open(_path(name), encoding="utf-8-sig") as f:   # -sig: tolerate a BOM (Windows editors, PowerShell 5.1)
             return json.load(f)
     except (OSError, ValueError):
         return default

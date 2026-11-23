@@ -51,7 +51,10 @@ def estimate(size: int, shape: dict | None, ctx: int, vram: int, ram: int, kv_by
     over = overhead_bytes(shape, ctx)
     need = size + kv + over
     vram_ok = vram * MARGIN
+    usable = vram_ok + ram * 0.90          # what the "won't run" check actually compares against
     out = {
+        "usable": int(usable),
+        "vram_usable": int(vram_ok),
         "ctx": ctx,
         "weights": size,
         "kv": kv,
@@ -65,7 +68,7 @@ def estimate(size: int, shape: dict | None, ctx: int, vram: int, ram: int, kv_by
         return {**out, "level": "fits", "gpu_layers": out["layers"]}
 
     # Total memory: GPU + RAM (leave RAM a 10% cushion for Windows).
-    if need > vram_ok + ram * 0.90:
+    if need > usable:
         return {**out, "level": "none", "gpu_layers": 0}
 
     if not shape or not shape["layers"]:

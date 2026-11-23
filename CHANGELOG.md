@@ -2,6 +2,20 @@
 
 All notable changes to Capstan (called DΛЯK Pull before 1.2.0). The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and versions follow [Semantic Versioning](https://semver.org/).
 
+## [1.3.1] — 2026-11-23 · polish and screenshots
+
+### Fixed
+- **Fit text could contradict itself** ("Won't run · needs 11.4 GB · you have 12.0 GB"). The check keeps margins (5% of VRAM, 10% of RAM), so the text now shows the same **usable** figure the check uses. "Won't run" always means needs > usable.
+- **Stale UI after updates:** the WebView now runs in private mode, so a cached old stylesheet can never mix with new code.
+- **Long repo titles** (e.g. `Qwen3.5-9B-…-GGUF`) split after hyphens, so each piece carries its own metal gradient (DESIGN.md §3.4), and the header has a dark halo over bright Mist.
+- **Hero headline:** a stronger, wider halo, so the ends ("model.") keep their edge over the brightest smoke. The home-screen Mist is slightly dimmer (0.32).
+- **Machine strip:** near-solid background and visible empty gauge segments, so the VRAM gauge no longer looks broken where the Mist shows through.
+- **Settings files with a BOM** (written by Windows PowerShell 5.1 or some editors) are read correctly instead of silently falling back to defaults.
+
+### Added
+- **README screenshots:** the search screen, and a repo at 128K context showing Partial (GPU layer counts) and Won't run.
+- **`tools/capture.py --pid N --size WxH`:** captures a specific Capstan window at a set size.
+
 ## [1.3.0] — 2026-11-23 · open-source ready
 
 ### Added

@@ -1,6 +1,6 @@
 """Capture the Capstan window to a PNG, even when other windows cover it.
 
-Usage: python tools/capture.py <out.png>
+Usage: python tools/capture.py <out.png> [--pid N] [--size WxH]
 Uses PrintWindow with PW_RENDERFULLCONTENT, so WebView2 content is included.
 """
 import ctypes
@@ -14,10 +14,36 @@ user32, gdi32 = ctypes.windll.user32, ctypes.windll.gdi32
 user32.SetProcessDPIAware()
 
 
-def capture(out: str) -> None:
-    hwnd = user32.FindWindowW(None, TITLE)
+def find_window(pid: int | None = None) -> int:
+    """The Capstan window; with pid, the one owned by that process (when several are open)."""
+    if pid is None:
+        return user32.FindWindowW(None, TITLE)
+    found = []
+    proc = ctypes.WINFUNCTYPE(wt.BOOL, wt.HWND, wt.LPARAM)
+
+    def cb(hwnd, _):
+        owner = wt.DWORD()
+        user32.GetWindowThreadProcessId(hwnd, ctypes.byref(owner))
+        buf = ctypes.create_unicode_buffer(64)
+        user32.GetWindowTextW(hwnd, buf, 64)
+        if owner.value == pid and buf.value == TITLE and user32.IsWindowVisible(hwnd):
+            found.append(hwnd)
+        return True
+
+    user32.EnumWindows(proc(cb), 0)
+    return found[0] if found else 0
+
+
+def capture(out: str, pid: int | None = None, size: tuple[int, int] | None = None) -> None:
+    hwnd = find_window(pid)
     if not hwnd:
         sys.exit("Capstan window not found")
+    if size:   # resize first (used for README shots)
+        import time
+        r0 = wt.RECT()
+        user32.GetWindowRect(hwnd, ctypes.byref(r0))
+        user32.SetWindowPos(hwnd, None, max(r0.left, 0), max(r0.top, 0), size[0], size[1], 0x14)
+        time.sleep(2.5)
     r = wt.RECT()
     user32.GetWindowRect(hwnd, ctypes.byref(r))
     w, h = r.right - r.left, r.bottom - r.top
@@ -44,4 +70,8 @@ def capture(out: str) -> None:
 
 
 if __name__ == "__main__":
-    capture(sys.argv[1])
+    # python tools/capture.py out.png [--pid N] [--size 1440x1000]
+    args = sys.argv[1:]
+    pid = int(args[args.index("--pid") + 1]) if "--pid" in args else None
+    size = tuple(int(v) for v in args[args.index("--size") + 1].split("x")) if "--size" in args else None
+    capture(args[0], pid, size)

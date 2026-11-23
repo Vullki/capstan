@@ -92,7 +92,8 @@ button { cursor: pointer; }
 .machine {
   display: flex; align-items: center; gap: var(--sp-6);
   padding: 9px var(--sp-5);
-  background: rgba(0,0,0,.55); backdrop-filter: blur(var(--blur-nav));
+  /* near-solid: instruments must read the same over any part of the Mist */
+  background: linear-gradient(180deg, rgba(10,10,11,.94), rgba(5,5,6,.92)); backdrop-filter: blur(var(--blur-nav));
   border-bottom: 1px solid var(--border);
   font-size: var(--fs-small);
   min-width: 0;
@@ -111,10 +112,10 @@ button { cursor: pointer; }
 
 /* segmented VRAM gauge: used segments bright, free segments dark */
 .vram { display: flex; gap: 2px; }
-.vram span { width: 7px; height: 14px; border-radius: 1.5px; background: #161618; transition: background var(--dur-ui); }
+.vram span { width: 7px; height: 14px; border-radius: 1.5px; background: #1b1b1d; box-shadow: inset 0 0 0 1px rgba(255,255,255,.05); transition: background var(--dur-ui); }
 .vram span.is-used { background: linear-gradient(180deg, #DCDCDC, #808080); }
 .vram span.is-other { background: linear-gradient(180deg, #808080, #464646); }
-.minibar { width: 64px; height: 6px; border-radius: 3px; background: #161618; overflow: hidden; }
+.minibar { width: 64px; height: 6px; border-radius: 3px; background: #1b1b1d; box-shadow: inset 0 0 0 1px rgba(255,255,255,.05); overflow: hidden; }
 .minibar span { display: block; height: 100%; width: 0; background: var(--progress-fill); transition: width var(--dur-ui) var(--ease-out-soft); }
 .minibar.is-low span { background: linear-gradient(90deg, #5a0a10, var(--fit-none)); }
 
@@ -222,10 +223,15 @@ select.field { padding-right: 30px; }
 
 .hero { position: relative; isolation: isolate; padding: 7vh 0 4vh; text-align: center; }
 .hero::before {   /* §3.4: a soft dark halo so the metal keeps its edges over bright Mist */
-  content: ""; position: absolute; inset: 0 8%; z-index: -1; pointer-events: none;
-  background: radial-gradient(closest-side, rgba(0,0,0,.62), rgba(0,0,0,.28) 60%, transparent);
+  content: ""; position: absolute; inset: -12% -4%; z-index: -1; pointer-events: none;
+  /* a wide ellipse, so the ends of the headline ("model.") are covered as well as the middle */
+  background: radial-gradient(ellipse 58% 52% at 50% 46%, rgba(0,0,0,.84), rgba(0,0,0,.55) 55%, rgba(0,0,0,.18) 78%, transparent);
 }
-.hero__title { margin: 0; font: 400 clamp(40px, 6vw, 72px)/1 var(--font-display); letter-spacing: -.01em; text-wrap: balance; filter: drop-shadow(0 0 28px rgba(0,0,0,.85)); }
+.hero__title {
+  margin: 0; font: 400 clamp(40px, 6vw, 72px)/1 var(--font-display); letter-spacing: -.01em; text-wrap: balance;
+  /* tight + wide halo: the charcoal bottom of each letter keeps its edge even over the brightest smoke */
+  filter: drop-shadow(0 0 8px rgba(0,0,0,.9)) drop-shadow(0 0 30px rgba(0,0,0,.85));
+}
 .hero__sub { margin: var(--sp-4) auto 0; max-width: 560px; color: var(--text-secondary); font-size: 15px; text-shadow: 0 0 22px rgba(0,0,0,.9); text-wrap: balance; }
 
 .results { display: grid; gap: 6px; }
@@ -255,9 +261,18 @@ select.field { padding-right: 30px; }
 /* ── Repo view ───────────────────────────────────────────────────────── */
 .back { display: inline-flex; align-items: center; gap: 6px; border: 0; background: none; color: var(--silver-mid); padding: 0; margin-bottom: var(--sp-4); font-size: 13px; }
 .back:hover { color: var(--silver-highlight); }
+.repohead { position: relative; isolation: isolate; }
+.repohead::before {   /* §3.4 halo: long metal titles stay readable over bright Mist */
+  content: ""; position: absolute; inset: -18% -3% -10% -4%; z-index: -1; pointer-events: none;
+  background: radial-gradient(ellipse 62% 70% at 38% 50%, rgba(0,0,0,.82), rgba(0,0,0,.5) 55%, rgba(0,0,0,.15) 80%, transparent);
+}
 .repohead { display: grid; grid-template-columns: 1fr auto; gap: var(--sp-4); align-items: end; margin-bottom: var(--sp-5); }
 .repohead__author { font-family: var(--font-mono); color: var(--text-secondary); font-size: 13px; }
-.repohead__title { margin: 4px 0 10px; font: 400 clamp(26px, 3vw, 38px)/1.08 var(--font-display); word-break: break-word; }
+.repohead__title {
+  margin: 4px 0 10px; font: 400 clamp(26px, 3vw, 38px)/1.08 var(--font-display);
+  overflow-wrap: anywhere;
+  filter: drop-shadow(0 0 22px rgba(0,0,0,.9));   /* §3.4 halo over the Mist */
+}
 .repohead__stats { display: flex; flex-wrap: wrap; gap: 8px; }
 
 .fitbar {
