@@ -139,7 +139,7 @@ The icon, by The BlackWolf, draws the capstan's job: a brushed-silver block lowe
 
 ## License
 
-[MIT](LICENSE) © 2026 The BlackWolf (DΛЯK). Bundled fonts and icons keep their own licenses (see [LICENSE](LICENSE)).
+[MIT](LICENSE) © 2026 The BlackWolf (DΛЯK). Bundled fonts and icons keep their own licenses (see [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md)).
 
 ## Changelog
 
