@@ -105,7 +105,8 @@ app/
   main.py            window (pywebview, frameless) + taskbar identity
   api.py             the bridge the UI calls; window drag/resize
   core/
-    hub.py           search, link parsing, file listing, quant grouping
+    hub.py           search (with the type filter), link parsing, file listing, quant grouping
+    modeltype.py     what a model does: type badges and filter buckets from Hub metadata
     gguf.py          GGUF header reader over HTTP range requests
     fit.py           memory estimate
     machine.py       GPU (NVML), RAM, drives
@@ -116,8 +117,10 @@ app/
 design/
   DESIGN.md          the Brushed Silver Noir design system the UI follows
   icon/              app icon: SVGs, .ico and PNG sizes (16–1024)
+tests/               unittest suite: python -m unittest discover -s tests
 tools/
   install-shortcut.ps1, capture.py
+docs/superpowers/    design specs and implementation plans
 ```
 
 ## Design

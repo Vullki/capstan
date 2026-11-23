@@ -7,6 +7,7 @@ All notable changes to Capstan (called DΛЯK Pull before 1.2.0). The format fol
 ### Fixed
 - **Wrong fit lights on unsloth repos.** `imatrix_unsloth.gguf` (importance-matrix calibration data, not a model) was listed as a model row, and being the smallest file it was the one whose header Capstan read. Its header has no layers, so the fit check counted no context cache and every quant looked lighter than it is (Qwen3.8-27B IQ1_S at 16K: 6.3 GB shown, 8.1 GB real). imatrix files now sit under **Other files**, still downloadable.
 - **An empty GGUF header is never trusted or cached.** If a header reads back with no layers, the fit falls back to the rough file-size estimate and says so, and old empty entries in the shape cache are ignored.
+- **Tests** for both: GGUF grouping (`tests/test_hub_group.py`) and the header guard (`tests/test_api_shape.py`). 33 tests in all.
 
 ## [1.4.0] — 2026-11-23 · model type badges and type filter
 
@@ -17,8 +18,16 @@ All notable changes to Capstan (called DΛЯK Pull before 1.2.0). The format fol
   - **Vision · no mmproj** marks repos labeled vision that ship no projector, since image input won't work from the GGUF alone.
 - **Type filter** under Sort: All · Text · Vision · Audio · Image · Video · Embeddings, remembered like Sort. A filter runs Hugging Face's own type query and a wider 200-repo search classified by Capstan, in parallel, then merges them, so repos Hugging Face left untagged still show up.
 
+- **Test suite** in `tests/` (standard-library `unittest`, no new dependencies): the type classifier, search merging and the non-chat fit. Run `python -m unittest discover -s tests` from the repo root.
+
 ### Changed
 - **Non-chat models** (image, video, music, text-to-speech, embeddings) have no context cache: their repo page hides the context slider and KV type, and the fit light counts the file plus runtime overhead.
+
+### Known issues
+- On non-chat repos, the fit-cell tooltip still mentions "KV 0.00 GB at 8K context".
+- If only the wide 200-repo query fails during a filtered search, untagged repos drop out of the results without a notice.
+- An invalid `type_filter` value typed into `settings.json` shows "undefined" in the results heading.
+- Text encoders (e.g. `city96/umt5-xxl-encoder-gguf`) borrow Text from their base model and keep the context slider.
 
 ## [1.3.2] — 2026-11-23 · machine strip with Windows text scaling
 
