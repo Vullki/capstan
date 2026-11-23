@@ -21,7 +21,9 @@ _TAG_TYPE = {
     # audio
     "automatic-speech-recognition": "stt", "audio-text-to-text": "stt", "audio-classification": "stt",
     "speech-recognition": "stt", "asr": "stt",
-    "text-to-speech": "tts", "text-to-audio": "tts", "tts": "tts",
+    "text-to-speech": "tts", "tts": "tts",
+    # On the Hub, text-to-audio is mostly music and sound effects, rarely speech.
+    "text-to-audio": "audio_gen", "audio-generation": "audio_gen", "sound-effects": "audio_gen",
     "music-generation": "music", "text-to-music": "music", "music": "music",
     "audio-to-audio": "audio", "audio": "audio", "speech": "audio",
     # generation
@@ -34,13 +36,13 @@ _TAG_TYPE = {
 }
 
 # Display order of badges.
-_ORDER = ["text", "vision", "vision_no_proj", "omni", "stt", "tts", "music", "audio",
+_ORDER = ["text", "vision", "vision_no_proj", "omni", "stt", "tts", "music", "audio_gen", "audio",
           "image_gen", "video_gen", "embeddings"]
 
 _BUCKETS = {
     "text": {"text", "vision", "vision_no_proj", "omni"},
     "vision": {"vision", "vision_no_proj", "omni"},
-    "audio": {"stt", "tts", "music", "audio"},
+    "audio": {"stt", "tts", "music", "audio_gen", "audio"},
     "image": {"image_gen"},
     "video": {"video_gen"},
     "embeddings": {"embeddings"},
@@ -57,16 +59,29 @@ BUCKET_PIPELINES = {
     "embeddings": ["feature-extraction", "sentence-similarity"],
 }
 
-_AUDIO = {"stt", "tts", "music", "audio"}
-_GENERATORS = {"image_gen", "video_gen", "music", "tts"}
+_AUDIO = {"stt", "tts", "music", "audio_gen", "audio"}
+_GENERATORS = {"image_gen", "video_gen", "music", "tts", "audio_gen"}
 _WEAK_VISION = {"vision", "vlm", "multimodal"}
+
+# When Hugging Face gives an official type, tags may only add types from the same family.
+# (A text model's stray "feature-extraction" tag doesn't make it an embedding model.)
+_CHAT = {"text", "vision", "omni", "stt", "tts", "audio"}
+_SOUND = {"stt", "tts", "music", "audio_gen", "audio", "text"}
+_FAMILY = {
+    "text": _CHAT, "vision": _CHAT, "omni": _CHAT,
+    "stt": _SOUND, "tts": _SOUND, "music": _SOUND, "audio_gen": _SOUND, "audio": _SOUND,
+    "image_gen": {"image_gen"}, "video_gen": {"video_gen"}, "embeddings": {"embeddings"},
+}
+# Shown only when nothing more specific is there.
+_GENERIC = {"audio": _AUDIO - {"audio"}, "audio_gen": {"music", "tts"}}
 
 
 def classify(pipeline_tag: str | None, tags: list[str] | None, files: list[str] | None) -> dict:
     """files=None means "not known" (no mmproj judgement); [] means the repo is empty."""
-    found: set[str] = set()
+    official = _TAG_TYPE.get((pipeline_tag or "").lower())
+    found: set[str] = {official} if official else set()
     weak_vision = False
-    for t in [pipeline_tag, *(tags or [])]:
+    for t in tags or []:
         low = (t or "").lower()
         if low in _WEAK_VISION:
             weak_vision = True
@@ -74,18 +89,23 @@ def classify(pipeline_tag: str | None, tags: list[str] | None, files: list[str] 
         kind = _TAG_TYPE.get(low)
         if kind:
             found.add(kind)
+    if weak_vision:
+        found.add("vision")
+    if official:
+        found &= _FAMILY[official]
     # "vision"/"multimodal" tags also decorate image, video and music generators;
     # they only mean image *input* when nothing says the model generates media.
-    if weak_vision and not (found & _GENERATORS):
-        found.add("vision")
+    if weak_vision and found & _GENERATORS and official not in ("vision", "omni"):
+        found.discard("vision")
 
     names = [f.rsplit("/", 1)[-1].lower() for f in files] if files is not None else None
     has_proj = bool(names) and any("mmproj" in n for n in names)
     has_gguf = bool(names) and any(n.endswith(".gguf") for n in names)
     labeled_vision = "vision" in found
 
-    # An mmproj is a vision projector unless everything else says the model is about audio.
-    vision_projector = has_proj and (labeled_vision or not (found & _AUDIO))
+    # An mmproj is a vision projector unless everything else says the model is about audio
+    # or generates media (image generators ship mmproj text encoders, audio models audio encoders).
+    vision_projector = has_proj and (labeled_vision or not (found & (_AUDIO | _GENERATORS)))
     if vision_projector:
         found.add("vision")
         if not (found - {"vision"}):
@@ -95,8 +115,9 @@ def classify(pipeline_tag: str | None, tags: list[str] | None, files: list[str] 
         found.discard("vision")
         found.add("vision_no_proj")
 
-    if found & (_AUDIO - {"audio"}):
-        found.discard("audio")   # "Audio" adds nothing next to Speech-to-text / TTS / Music
+    for generic, specific in _GENERIC.items():
+        if found & specific:
+            found.discard(generic)   # "Audio" adds nothing next to Speech-to-text / TTS / Music
     types = [t for t in _ORDER if t in found] or ["unlabeled"]
     buckets = [b for b, members in _BUCKETS.items() if found & members]
     return {"types": types, "buckets": buckets, "vision_projector": vision_projector}

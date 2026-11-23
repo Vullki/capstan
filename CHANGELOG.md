@@ -5,8 +5,8 @@ All notable changes to Capstan (called DΛЯK Pull before 1.2.0). The format fol
 ## [1.4.0] — 2026-11-23 · model type badges and type filter
 
 ### Added
-- **Type badges** on every search row, link and repo page: Text, Vision, Omni, Speech-to-text, Text-to-speech, Music, Audio, Image gen, Video gen, Embeddings, or an honest **Unlabeled** when nothing says what a model does.
-  - Evidence, strongest first: Hugging Face's own type label, then the repo's tags, then its files. An `mmproj` file means vision input, unless everything else says the model is about audio.
+- **Type badges** on every search row, link and repo page: Text, Vision, Omni, Speech-to-text, Text-to-speech, Music, Audio gen (sound effects, text-to-audio), Audio, Image gen, Video gen, Embeddings, or an honest **Unlabeled** when nothing says what a model does.
+  - Evidence, strongest first: Hugging Face's own type label, then the repo's tags, then its files. When the official label exists, tags only add types from the same family (a stray `feature-extraction` tag doesn't make a chat model an embedding model). An `mmproj` file means vision input, unless the model is about audio or generates media.
   - About 1 in 5 GGUF repos has no official type (including `unsloth/Qwen3.8-27B-GGUF`); these are still classified from their tags and files. On a repo page, a still-unlabeled repo borrows its base model's type.
   - **Vision · no mmproj** marks repos labeled vision that ship no projector, since image input won't work from the GGUF alone.
 - **Type filter** under Sort: All · Text · Vision · Audio · Image · Video · Embeddings, remembered like Sort. A filter runs Hugging Face's own type query and a wider 200-repo search classified by Capstan, in parallel, then merges them, so repos Hugging Face left untagged still show up.

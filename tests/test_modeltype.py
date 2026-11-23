@@ -51,6 +51,35 @@ class ClassifyTest(unittest.TestCase):
         self.assertEqual(r["types"], ["video_gen"])
         self.assertEqual(r["buckets"], ["video"])
 
+    def test_text_to_audio_is_not_speech(self):
+        r = classify("text-to-audio", ["gguf"], ["moss-soundeffect-Q8_0.gguf"])
+        self.assertEqual(r["types"], ["audio_gen"])
+        self.assertEqual(r["buckets"], ["audio"])
+
+    def test_music_wins_over_generic_audio_generation(self):
+        r = classify("text-to-audio", ["music-generation"], [])
+        self.assertEqual(r["types"], ["music"])
+
+    def test_tags_do_not_add_other_families_to_an_official_label(self):
+        # GLM-5.3-Flash-Maya: text-generation with a stray feature-extraction tag
+        r = classify("text-generation", ["feature-extraction", "conversational"], ["m.gguf"])
+        self.assertEqual(r["types"], ["text"])
+        self.assertNotIn("embeddings", r["buckets"])
+        # parakeet: speech recognition with a feature-extraction tag
+        r = classify("automatic-speech-recognition", ["feature-extraction"], [])
+        self.assertEqual(r["types"], ["stt"])
+
+    def test_image_generator_with_text_encoder_mmproj_is_only_image_gen(self):
+        # Qwen-Image style repo: text-to-image, chat-ish tags, ships an mmproj text encoder
+        r = classify("text-to-image", ["conversational", "vision"], ["qwen-image-Q4_K_M.gguf", "mmproj-F16.gguf"])
+        self.assertEqual(r["types"], ["image_gen"])
+        self.assertEqual(r["buckets"], ["image"])
+        self.assertFalse(r["vision_projector"])
+
+    def test_untagged_generator_with_mmproj_is_not_vision(self):
+        r = classify(None, ["text-to-image"], ["z-image-Q4.gguf", "mmproj.gguf"])
+        self.assertEqual(r["types"], ["image_gen"])
+
     def test_any_to_any_is_omni(self):
         r = classify("any-to-any", ["gguf"], [])
         self.assertIn("omni", r["types"])

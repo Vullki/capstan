@@ -44,6 +44,7 @@
     stt: { label: 'Speech-to-text', icon: 'ph-microphone', tip: 'Transcribes or understands audio' },
     tts: { label: 'Text-to-speech', icon: 'ph-speaker-high', tip: 'Generates speech or audio' },
     music: { label: 'Music', icon: 'ph-music-notes', tip: 'Generates music' },
+    audio_gen: { label: 'Audio gen', icon: 'ph-waveform', tip: 'Generates sound: effects, ambience, music' },
     audio: { label: 'Audio', icon: 'ph-waveform', tip: 'Audio model' },
     image_gen: { label: 'Image gen', icon: 'ph-image', tip: 'Generates or edits images' },
     video_gen: { label: 'Video gen', icon: 'ph-film-strip', tip: 'Generates video' },
