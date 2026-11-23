@@ -46,6 +46,11 @@ class ClassifyTest(unittest.TestCase):
         self.assertEqual(r["types"], ["video_gen"])
         self.assertEqual(r["buckets"], ["video"])
 
+    def test_multimodal_tag_on_a_generator_is_not_vision(self):
+        r = classify("image-text-to-video", ["multimodal", "video-generation"], ["minimax-h3-Q4_K_M.gguf"])
+        self.assertEqual(r["types"], ["video_gen"])
+        self.assertEqual(r["buckets"], ["video"])
+
     def test_any_to_any_is_omni(self):
         r = classify("any-to-any", ["gguf"], [])
         self.assertIn("omni", r["types"])

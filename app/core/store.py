@@ -33,6 +33,7 @@ DEFAULT_SETTINGS = {
     "kv_type": "f16",           # f16 | q8_0 | q4_0
     "gguf_only": True,
     "sort": "downloads",
+    "type_filter": "all",
 }
 KV_BYTES = {"f16": 2.0, "q8_0": 1.0625, "q4_0": 0.5625}
 

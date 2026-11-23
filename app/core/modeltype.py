@@ -58,15 +58,26 @@ BUCKET_PIPELINES = {
 }
 
 _AUDIO = {"stt", "tts", "music", "audio"}
+_GENERATORS = {"image_gen", "video_gen", "music", "tts"}
+_WEAK_VISION = {"vision", "vlm", "multimodal"}
 
 
 def classify(pipeline_tag: str | None, tags: list[str] | None, files: list[str] | None) -> dict:
     """files=None means "not known" (no mmproj judgement); [] means the repo is empty."""
     found: set[str] = set()
+    weak_vision = False
     for t in [pipeline_tag, *(tags or [])]:
-        kind = _TAG_TYPE.get((t or "").lower())
+        low = (t or "").lower()
+        if low in _WEAK_VISION:
+            weak_vision = True
+            continue
+        kind = _TAG_TYPE.get(low)
         if kind:
             found.add(kind)
+    # "vision"/"multimodal" tags also decorate image, video and music generators;
+    # they only mean image *input* when nothing says the model generates media.
+    if weak_vision and not (found & _GENERATORS):
+        found.add("vision")
 
     names = [f.rsplit("/", 1)[-1].lower() for f in files] if files is not None else None
     has_proj = bool(names) and any("mmproj" in n for n in names)

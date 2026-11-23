@@ -2,10 +2,13 @@
 from __future__ import annotations
 
 import re
+from concurrent.futures import ThreadPoolExecutor
 from urllib.parse import urlparse
 
 from huggingface_hub import HfApi
 from huggingface_hub.utils import GatedRepoError, RepositoryNotFoundError
+
+from core import modeltype
 
 api = HfApi()
 
@@ -36,23 +39,68 @@ def size_class(text: str) -> str | None:
     return f"{n}{unit}"
 
 
-def search(query: str, sort: str = "downloads", gguf_only: bool = True, limit: int = 40) -> list[dict]:
+POOL = 200      # general results classified locally when a type filter is on
+MAX_FILTERED = 60
+
+
+def _row(m) -> dict:
+    author, _, name = m.id.partition("/")
+    files = [s.rfilename for s in m.siblings] if m.siblings is not None else None
+    kind = modeltype.classify(m.pipeline_tag, m.tags, files)
+    return {
+        "id": m.id, "author": author, "name": name,
+        "downloads": m.downloads or 0, "likes": m.likes or 0,
+        "updated": m.last_modified.isoformat() if m.last_modified else None,
+        "trending": getattr(m, "trending_score", None) or 0,
+        "gated": bool(m.gated), "pipeline": m.pipeline_tag,
+        "size_class": size_class(name),
+        "gguf": "gguf" in (m.tags or []),
+        "types": kind["types"], "buckets": kind["buckets"], "vision_projector": kind["vision_projector"],
+    }
+
+
+def _query(query: str, sort: str, gguf_only: bool, limit: int, pipeline_tag: str | None = None) -> list[dict]:
     kwargs = dict(search=query or None, sort=SORTS.get(sort, "downloads"), limit=limit,
-                  expand=["downloads", "likes", "lastModified", "trendingScore", "gated", "pipeline_tag", "tags"])
+                  expand=["downloads", "likes", "lastModified", "trendingScore", "gated",
+                          "pipeline_tag", "tags", "siblings"])
     if gguf_only:
         kwargs["filter"] = "gguf"
-    out = []
-    for m in api.list_models(**kwargs):
-        author, _, name = m.id.partition("/")
-        out.append({
-            "id": m.id, "author": author, "name": name,
-            "downloads": m.downloads or 0, "likes": m.likes or 0,
-            "updated": m.last_modified.isoformat() if m.last_modified else None,
-            "gated": bool(m.gated), "pipeline": m.pipeline_tag,
-            "size_class": size_class(name),
-            "gguf": "gguf" in (m.tags or []),
-        })
-    return out
+    if pipeline_tag:
+        kwargs["pipeline_tag"] = pipeline_tag
+    return [_row(m) for m in api.list_models(**kwargs)]
+
+
+_SORT_KEY = {"downloads": "downloads", "likes": "likes", "trending": "trending", "updated": "updated"}
+
+
+def merge_results(lists: list[list[dict]], sort: str) -> list[dict]:
+    """Several result lists -> one, each repo once, ranked by the chosen sort (highest first)."""
+    seen: dict[str, dict] = {}
+    for rows in lists:
+        for r in rows:
+            seen.setdefault(r["id"], r)
+    key = _SORT_KEY.get(sort, "downloads")
+    return sorted(seen.values(), key=lambda r: (r.get(key) is not None, r.get(key) or 0), reverse=True)
+
+
+def search(query: str, sort: str = "downloads", gguf_only: bool = True,
+           type_filter: str = "all", limit: int = 40) -> list[dict]:
+    pipelines = modeltype.BUCKET_PIPELINES.get(type_filter)
+    if not pipelines:
+        return _query(query, sort, gguf_only, limit)
+    # Hub-side: repos labeled with this type. Local: a wider pool, classified by our rules,
+    # so repos Hugging Face left unlabeled still show up.
+    jobs = [dict(limit=POOL)] + [dict(limit=limit, pipeline_tag=p) for p in pipelines]
+    lists, errors = [], []
+    with ThreadPoolExecutor(max_workers=len(jobs)) as ex:
+        for fut in [ex.submit(_query, query, sort, gguf_only, **j) for j in jobs]:
+            try:
+                lists.append(fut.result())
+            except Exception as e:   # one failed query shouldn't sink the whole search
+                errors.append(e)
+    if not lists:
+        raise errors[0]
+    return [r for r in merge_results(lists, sort) if type_filter in r["buckets"]][:MAX_FILTERED]
 
 
 def parse_link(text: str) -> dict | None:
@@ -108,10 +156,33 @@ def _common_prefix(names: list[str]) -> str:
     return a[:cut + 1] if cut > 0 else ""
 
 
+def _base_models(info) -> list[str]:
+    cd = getattr(info, "card_data", None)
+    base = getattr(cd, "base_model", None) if cd else None
+    if isinstance(base, str):
+        return [base]
+    return [b for b in (base or []) if isinstance(b, str)]
+
+
+def repo_kind(info, files: list[str]) -> dict:
+    """Classify a repo; if it carries no type at all, borrow its base model's labels."""
+    kind = modeltype.classify(getattr(info, "pipeline_tag", None), getattr(info, "tags", None), files)
+    if kind["types"] != ["unlabeled"]:
+        return kind
+    bases = _base_models(info)
+    if bases:
+        try:
+            b = api.model_info(bases[0], expand=["pipeline_tag", "tags"])
+            kind = modeltype.classify(b.pipeline_tag, b.tags, files)
+        except Exception:
+            pass   # base model gone, gated or offline: stay Unlabeled
+    return kind
+
+
 def repo(repo_id: str, revision: str | None = None) -> dict:
     """Repo summary plus its files, with GGUFs grouped into downloadable models."""
     try:
-        info = api.model_info(repo_id, revision=revision, expand=["downloads", "likes", "lastModified", "gated", "gguf", "cardData", "tags"])
+        info = api.model_info(repo_id, revision=revision, expand=["downloads", "likes", "lastModified", "gated", "gguf", "cardData", "tags", "pipeline_tag"])
     except RepositoryNotFoundError:
         return {"error": "Repo not found. It may be private, or the name is wrong."}
     except GatedRepoError:
@@ -158,7 +229,10 @@ def repo(repo_id: str, revision: str | None = None) -> dict:
     gguf.sort(key=lambda x: (x["mmproj"], _quant_rank(x["quant"]), x["size"]))
 
     gi = getattr(info, "gguf", None) or {}
+    kind = repo_kind(info, [f["path"] for f in files])
     return {
+        "types": kind["types"],
+        "vision_projector": kind["vision_projector"],
         "repo_id": repo_id,
         "revision": revision,
         "author": repo_id.split("/")[0],

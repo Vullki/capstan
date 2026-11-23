@@ -87,8 +87,9 @@ class Api:
 
     # ── search / repo ─────────────────────────────────────────────────
     @_safe
-    def search(self, query, sort="downloads", gguf_only=True):
-        return {"query": query, "results": hub.search(query, sort=sort, gguf_only=gguf_only)}
+    def search(self, query, sort="downloads", gguf_only=True, type_filter="all"):
+        return {"query": query, "type_filter": type_filter,
+                "results": hub.search(query, sort=sort, gguf_only=gguf_only, type_filter=type_filter)}
 
     @_safe
     def parse_link(self, text):
