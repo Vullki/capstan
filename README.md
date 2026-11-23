@@ -28,6 +28,7 @@ Capstan answers that **before** the download. It reads each model's header strai
 ## Features
 
 - **Live Hub search** as you type. GGUF only by default; sort by downloads, trending, likes or newest.
+- **Know what a model does:** every result carries type badges (Text, Vision, Speech-to-text, Text-to-speech, Music, Image gen, Video gen, Embeddings…), and a type filter narrows Search to one kind. Untagged repos are classified from their tags and files (an `mmproj` means vision), so filtering never hides them.
 - **Paste any link:** a repo ID (`owner/name`), a `huggingface.co/...` URL, or a direct file link. The repo opens straight away.
 - **Machine strip:** VRAM free right now and which model runner is holding it (Ollama, LM Studio, llama.cpp…), plus RAM and free space on every drive. Refreshes every 2 s.
 - **A fit light on every file:**

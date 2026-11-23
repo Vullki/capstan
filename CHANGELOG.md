@@ -2,6 +2,18 @@
 
 All notable changes to Capstan (called DΛЯK Pull before 1.2.0). The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and versions follow [Semantic Versioning](https://semver.org/).
 
+## [1.4.0] — 2026-11-23 · model type badges and type filter
+
+### Added
+- **Type badges** on every search row, link and repo page: Text, Vision, Omni, Speech-to-text, Text-to-speech, Music, Audio, Image gen, Video gen, Embeddings, or an honest **Unlabeled** when nothing says what a model does.
+  - Evidence, strongest first: Hugging Face's own type label, then the repo's tags, then its files. An `mmproj` file means vision input, unless everything else says the model is about audio.
+  - About 1 in 5 GGUF repos has no official type (including `unsloth/Qwen3.8-27B-GGUF`); these are still classified from their tags and files. On a repo page, a still-unlabeled repo borrows its base model's type.
+  - **Vision · no mmproj** marks repos labeled vision that ship no projector, since image input won't work from the GGUF alone.
+- **Type filter** under Sort: All · Text · Vision · Audio · Image · Video · Embeddings, remembered like Sort. A filter runs Hugging Face's own type query and a wider 200-repo search classified by Capstan, in parallel, then merges them, so repos Hugging Face left untagged still show up.
+
+### Changed
+- **Non-chat models** (image, video, music, text-to-speech, embeddings) have no context cache: their repo page hides the context slider and KV type, and the fit light counts the file plus runtime overhead.
+
 ## [1.3.2] — 2026-11-23 · machine strip with Windows text scaling
 
 ### Fixed
