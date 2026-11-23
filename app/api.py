@@ -14,7 +14,7 @@ from concurrent.futures import ThreadPoolExecutor
 from core import fit, fonts, gguf, hub, machine, store
 from core.downloads import Queue
 
-VERSION = "1.4.0"
+VERSION = "1.4.1"
 _pool = ThreadPoolExecutor(max_workers=4)
 
 
@@ -106,10 +106,14 @@ class Api:
     def shape(self, repo_id, header_file, revision=None):
         key = f"{repo_id}@{revision or 'main'}:{header_file}"
         s = store.cached_shape(key)
-        if s:
+        if s and s.get("layers"):
             return {"shape": s, "cached": True}
         meta = gguf.read_metadata(repo_id, header_file, revision)
         s = gguf.model_shape(meta)
+        if not s.get("layers"):
+            # No layers means this isn't a model header (calibration data, a tokenizer...).
+            # An empty shape would zero the KV cache and make every quant look like it fits.
+            return {"shape": None, "cached": False}
         store.cache_shape(key, s)
         return {"shape": s, "cached": False}
 

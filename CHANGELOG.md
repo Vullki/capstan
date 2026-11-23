@@ -2,6 +2,12 @@
 
 All notable changes to Capstan (called DΛЯK Pull before 1.2.0). The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and versions follow [Semantic Versioning](https://semver.org/).
 
+## [1.4.1] — 2026-11-23 · imatrix files and empty headers
+
+### Fixed
+- **Wrong fit lights on unsloth repos.** `imatrix_unsloth.gguf` (importance-matrix calibration data, not a model) was listed as a model row, and being the smallest file it was the one whose header Capstan read. Its header has no layers, so the fit check counted no context cache and every quant looked lighter than it is (Qwen3.8-27B IQ1_S at 16K: 6.3 GB shown, 8.1 GB real). imatrix files now sit under **Other files**, still downloadable.
+- **An empty GGUF header is never trusted or cached.** If a header reads back with no layers, the fit falls back to the rough file-size estimate and says so, and old empty entries in the shape cache are ignored.
+
 ## [1.4.0] — 2026-11-23 · model type badges and type filter
 
 ### Added

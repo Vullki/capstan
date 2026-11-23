@@ -274,7 +274,7 @@
     try {
       const s = await call('shape', state.repo.repo_id, pick.header_file, state.repo.revision);
       state.shape = s.shape;
-      state.shapeState = 'ok';
+      state.shapeState = s.shape ? 'ok' : 'failed';
       if (state.shape?.context_max) {
         state.repo.context_max = state.shape.context_max;
         state.ctx = Math.min(state.ctx, state.shape.context_max);

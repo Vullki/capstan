@@ -179,32 +179,19 @@ def repo_kind(info, files: list[str]) -> dict:
     return kind
 
 
-def repo(repo_id: str, revision: str | None = None) -> dict:
-    """Repo summary plus its files, with GGUFs grouped into downloadable models."""
-    try:
-        info = api.model_info(repo_id, revision=revision, expand=["downloads", "likes", "lastModified", "gated", "gguf", "cardData", "tags", "pipeline_tag"])
-    except RepositoryNotFoundError:
-        return {"error": "Repo not found. It may be private, or the name is wrong."}
-    except GatedRepoError:
-        info = None
+def _is_imatrix(name: str) -> bool:
+    """Importance-matrix calibration data (unsloth ships imatrix_unsloth.gguf). Not a model."""
+    return "imatrix" in name.rsplit("/", 1)[-1].lower()
 
-    files, folders = [], set()
-    try:
-        for f in api.list_repo_tree(repo_id, recursive=True, revision=revision):
-            if hasattr(f, "size"):
-                lfs = getattr(f, "lfs", None)
-                sha = getattr(lfs, "sha256", None) if lfs else None
-                files.append({"path": f.path, "size": f.size or 0, "sha256": sha})
-    except GatedRepoError:
-        return {"error": "gated", "repo_id": repo_id,
-                "message": "This repo is gated. Request access on its page, then log in with `hf auth login`."}
 
-    # Group GGUFs: split parts become one model; mmproj files are separate.
+def group_gguf(files: list[dict]) -> tuple[list[dict], list[dict]]:
+    """Repo files -> (GGUF model rows, other files). Split parts become one model; mmproj
+    files are separate rows; imatrix files are calibration data, so they go with the others."""
     groups: dict[str, dict] = {}
     others = []
     for f in files:
         p = f["path"]
-        if not p.lower().endswith(".gguf"):
+        if not p.lower().endswith(".gguf") or _is_imatrix(p):
             others.append(f)
             continue
         m = _SPLIT.search(p)
@@ -227,6 +214,30 @@ def repo(repo_id: str, revision: str | None = None) -> dict:
                      "folder": key.rsplit("/", 1)[0] if "/" in key else "",
                      "mmproj": is_mmproj, "header_file": g["files"][0]["path"]})
     gguf.sort(key=lambda x: (x["mmproj"], _quant_rank(x["quant"]), x["size"]))
+    return gguf, sorted(others, key=lambda f: f["path"])
+
+
+def repo(repo_id: str, revision: str | None = None) -> dict:
+    """Repo summary plus its files, with GGUFs grouped into downloadable models."""
+    try:
+        info = api.model_info(repo_id, revision=revision, expand=["downloads", "likes", "lastModified", "gated", "gguf", "cardData", "tags", "pipeline_tag"])
+    except RepositoryNotFoundError:
+        return {"error": "Repo not found. It may be private, or the name is wrong."}
+    except GatedRepoError:
+        info = None
+
+    files, folders = [], set()
+    try:
+        for f in api.list_repo_tree(repo_id, recursive=True, revision=revision):
+            if hasattr(f, "size"):
+                lfs = getattr(f, "lfs", None)
+                sha = getattr(lfs, "sha256", None) if lfs else None
+                files.append({"path": f.path, "size": f.size or 0, "sha256": sha})
+    except GatedRepoError:
+        return {"error": "gated", "repo_id": repo_id,
+                "message": "This repo is gated. Request access on its page, then log in with `hf auth login`."}
+
+    gguf, others = group_gguf(files)
 
     gi = getattr(info, "gguf", None) or {}
     kind = repo_kind(info, [f["path"] for f in files])
