@@ -434,18 +434,26 @@ input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; width: 16px;
 .dialog__body { margin: 0 0 18px; color: var(--text-secondary); word-break: break-word; }
 .dialog__actions { display: flex; justify-content: flex-end; gap: 8px; }
 
-/* narrow windows: the machine strip drops totals and drive bars, gauges get finer */
-@media (max-width: 1179px) {
+/* Machine strip: adapts to the width it actually gets (container queries), not the
+   window size. Windows "Text size" zooms the WebView (114% turns a 1264 px window
+   into ~1109 CSS px), so media breakpoints misfire. Least important things go first:
+   gauge width → drive bars → totals → GPU name. */
+.machine { container: machine / inline-size; }
+@container machine (max-width: 1200px) {
   .machine { gap: var(--sp-4); padding-inline: var(--sp-4); }
   .vram { gap: 1.5px; }
   .vram span { width: 4px; }
-  .machine__val .tot { display: none; }
-  .drive .minibar { display: none; }
   .machine__drives { gap: var(--sp-3); }
 }
-@media (max-width: 1040px) {
+@container machine (max-width: 1080px) {
+  .drive .minibar { display: none; }
+}
+@container machine (max-width: 940px) {
+  .machine__val .tot { display: none; }
+  .ram-item .minibar { width: 44px; }
+}
+@container machine (max-width: 820px) {
   .machine [data-gpu-name] { display: none; }
-  .minibar { width: 44px; }
 }
 
 @media (max-width: 1120px) {

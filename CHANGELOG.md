@@ -2,6 +2,11 @@
 
 All notable changes to Capstan (called DΛЯK Pull before 1.2.0). The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and versions follow [Semantic Versioning](https://semver.org/).
 
+## [1.3.2] — 2026-11-23 · machine strip with Windows text scaling
+
+### Fixed
+- **Machine strip totals hidden on normal-size windows.** Windows' Accessibility "Text size" makes WebView2 zoom the page (at 114%, a 1264 px window has ~1109 CSS px), so window-size breakpoints misfired. The strip now uses a CSS container query on its own width and drops things in order of importance: gauge width, then drive bars, then totals, then the GPU name. Verified at 1264 px with 114% text (totals shown) and at the 980 px minimum (no overlap).
+
 ## [1.3.1] — 2026-11-23 · polish and screenshots
 
 ### Fixed
