@@ -114,15 +114,16 @@ class Api:
         return {"shape": s, "cached": False}
 
     @_safe
-    def fit(self, items, shape, ctx, judge="free", kv_type="f16"):
-        """items: [{key, size}] -> {key: estimate}. Judged against the live machine."""
+    def fit(self, items, shape, ctx, judge="free", kv_type="f16", text=True):
+        """items: [{key, size}] -> {key: estimate}. Judged against the live machine.
+        text=False: not a chat model (image/video/music/TTS/embeddings), so no KV cache."""
         m = machine.snapshot()
         g = m["gpu"]
         vram = (g["free"] if judge == "free" else g["total"]) if g else 0
         ram = m["ram"]["available"] if judge == "free" else m["ram"]["total"]
         kvb = store.KV_BYTES.get(kv_type, 2.0)
         return {"vram": vram, "ram": ram, "gpu": bool(g),
-                "est": {it["key"]: fit.estimate(int(it["size"]), shape, int(ctx), vram, ram, kvb) for it in items}}
+                "est": {it["key"]: fit.estimate(int(it["size"]), shape, int(ctx), vram, ram, kvb, text=bool(text)) for it in items}}
 
     # ── downloads ─────────────────────────────────────────────────────
     @_safe

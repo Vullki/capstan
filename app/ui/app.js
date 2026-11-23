@@ -9,7 +9,7 @@
   const state = {
     settings: null, machine: null, user: null,
     view: 'search', prevView: 'search',
-    sort: 'downloads', gguf: true, q: '', seq: 0,
+    sort: 'downloads', gguf: true, typeFilter: 'all', q: '', seq: 0,
     repo: null, shape: null, shapeState: 'idle', fits: null, avail: null,
     sel: new Set(), dest: '', ctx: 8192,
     jobs: [], library: [], libPaths: new Set(), libFilter: '',
@@ -34,6 +34,29 @@
   const norm = (p) => (p || '').replace(/\//g, '\\').toLowerCase();
   const joinPath = (dir, file) => `${dir.replace(/[\\/]+$/, '')}\\${file.replace(/\//g, '\\')}`;
   const debounce = (fn, ms) => { let t; return (...a) => { clearTimeout(t); t = setTimeout(() => fn(...a), ms); }; };
+
+  // What a model does (types come from app/core/modeltype.py).
+  const TYPE_META = {
+    text: { label: 'Text', icon: 'ph-chat-text', tip: 'Chat / text generation' },
+    vision: { label: 'Vision', icon: 'ph-eye', tip: 'Takes images as input. Vision projector (mmproj) included' },
+    vision_no_proj: { label: 'Vision · no mmproj', icon: 'ph-eye-slash', dim: true, tip: 'Labeled vision, but this repo ships no vision projector (mmproj): image input won’t work from the GGUF alone' },
+    omni: { label: 'Omni', icon: 'ph-atom', tip: 'Any-to-any: text, images, audio in and out' },
+    stt: { label: 'Speech-to-text', icon: 'ph-microphone', tip: 'Transcribes or understands audio' },
+    tts: { label: 'Text-to-speech', icon: 'ph-speaker-high', tip: 'Generates speech or audio' },
+    music: { label: 'Music', icon: 'ph-music-notes', tip: 'Generates music' },
+    audio: { label: 'Audio', icon: 'ph-waveform', tip: 'Audio model' },
+    image_gen: { label: 'Image gen', icon: 'ph-image', tip: 'Generates or edits images' },
+    video_gen: { label: 'Video gen', icon: 'ph-film-strip', tip: 'Generates video' },
+    embeddings: { label: 'Embeddings', icon: 'ph-graph', tip: 'Turns text into vectors for search and RAG' },
+    unlabeled: { label: 'Unlabeled', icon: 'ph-question', dim: true, tip: 'Hugging Face has no type for this repo, and nothing in it says what it does' },
+  };
+  const TYPE_NOUN = { text: 'text', vision: 'vision', audio: 'audio', image: 'image', video: 'video', embeddings: 'embedding' };
+  const typeChips = (types) => (types || []).map((t) => {
+    const m = TYPE_META[t]; if (!m) return '';
+    return `<span class="chip chip--type${m.dim ? ' chip--dim' : ''}" title="${esc(m.tip)}"><i class="ph-duotone ${m.icon}"></i>${esc(m.label)}</span>`;
+  }).join('');
+  // Context and KV cache only mean something for models that hold a conversation.
+  const isChatModel = (types) => !types || types.includes('unlabeled') || types.some((t) => ['text', 'vision', 'vision_no_proj', 'omni', 'stt'].includes(t));
 
   async function call(name, ...args) {
     const r = await window.pywebview.api[name](...args);
@@ -160,15 +183,20 @@
     }
     $('[data-spin]').hidden = false;
     try {
-      const sort = state.sort;
-      const r = await call('search', q, sort, state.gguf);
+      const sort = state.sort, tf = state.typeFilter;
+      const r = await call('search', q, sort, state.gguf, tf);
       if (seq !== state.seq) return;
       const top = looksLikeRepo(q) && !r.results.some((x) => x.id.toLowerCase() === q.toLowerCase()) ? linkCard({ repo_id: q }) : '';
       const heading = { downloads: 'Most downloaded', trending: 'Trending', likes: 'Most liked', updated: 'Newest' }[sort];
-      const label = q ? '' : `<div class="results__label label-engraved">${heading} ${state.gguf ? 'GGUF ' : ''}models on the Hub</div>`;
+      const noun = tf === 'all' ? '' : `${TYPE_NOUN[tf]} `;
+      const label = q ? '' : `<div class="results__label label-engraved">${heading} ${noun}${state.gguf ? 'GGUF ' : ''}models on the Hub</div>`;
+      const what = q ? `“${esc(q)}”` : 'this search';
+      const none = tf !== 'all' ? `No ${noun}models match ${what}${state.gguf ? ' in GGUF' : ''}. Try “All”${state.gguf ? ' or turning off “GGUF only”' : ''}.`
+        : `No models match ${what}${state.gguf ? ' in GGUF. Try turning off “GGUF only”.' : '.'}`;
       box.innerHTML = label + top + (r.results.length ? r.results.map(resultRow).join('') :
-        `<div class="empty"><i class="ph-duotone ph-magnifying-glass"></i>No models match “${esc(q)}”${state.gguf ? ' in GGUF. Try turning off “GGUF only”.' : '.'}</div>`);
-      $('[data-results-meta]').textContent = r.results.length ? `${r.results.length} results${r.results.length >= 40 ? ' (top 40)' : ''}` : '';
+        `<div class="empty"><i class="ph-duotone ph-magnifying-glass"></i>${none}</div>`);
+      const n = r.results.length, cap = tf === 'all' ? 40 : 60;
+      $('[data-results-meta]').textContent = n ? `${n} ${noun || ''}${tf === 'all' ? 'results' : 'models'}${n >= cap ? ` (top ${cap})` : ''}` : '';
       bindResults(box);
     } catch (e) {
       if (seq === state.seq) box.innerHTML = `<div class="empty"><i class="ph-duotone ph-wifi-slash"></i>Search failed: ${esc(e.message)}</div>`;
@@ -188,6 +216,7 @@
     return `<button type="button" class="result enter" style="--i:${Math.min(i, 20)}" data-open="${esc(m.id)}">
       <div style="min-width:0"><div class="result__name">${esc(m.name)}</div><div class="result__author">${esc(m.author)}</div></div>
       <div class="result__meta">
+        <span class="result__types">${typeChips(m.types)}</span>
         ${m.size_class ? `<span class="chip chip--quant">${esc(m.size_class)}</span>` : ''}
         ${m.gated ? '<span class="chip chip--dim"><i class="ph-duotone ph-lock-simple"></i>Gated</span>' : ''}
         <span title="Downloads (last 30 days)"><i class="ph-duotone ph-download-simple"></i>${num(m.downloads)}</span>
@@ -261,7 +290,7 @@
     const items = modelRows().map((g) => ({ key: g.key, size: g.size }));
     if (!items.length) { renderFitCells(); return; }
     try {
-      const r = await call('fit', items, state.shape, state.ctx, state.settings.judge, state.settings.kv_type);
+      const r = await call('fit', items, state.shape, state.ctx, state.settings.judge, state.settings.kv_type, isChatModel(state.repo.types));
       state.fits = r.est; state.avail = r;
       state.lastVramFree = state.machine?.gpu?.free ?? null;
     } catch { state.fits = null; }
@@ -280,6 +309,7 @@
     const pane = $('[data-pane="repo"]');
     const params = r.params ? `${(r.params / 1e9).toFixed(r.params < 1e10 ? 1 : 0)}B params` : r.size_class;
     const models = r.gguf.filter((g) => !g.mmproj), proj = r.gguf.filter((g) => g.mmproj);
+    const chat = isChatModel(r.types);
     pane.innerHTML = `
       <button type="button" class="back" data-back><i class="ph-duotone ph-arrow-left"></i>Back</button>
       <div class="repohead">
@@ -287,6 +317,7 @@
           <div class="repohead__author">${esc(r.author)}</div>
           <h2 class="repohead__title headline-silver" data-split>${esc(r.name)}</h2>
           <div class="repohead__stats">
+            ${typeChips(r.types)}
             ${params ? `<span class="chip chip--quant">${esc(params)}</span>` : ''}
             ${r.architecture ? `<span class="chip">${esc(r.architecture)}</span>` : ''}
             ${r.context_max ? `<span class="chip">${ctxLabel(r.context_max)} context</span>` : ''}
@@ -301,7 +332,7 @@
 
       ${models.length ? `
       <div class="fitbar">
-        <div class="fitbar__ctx">
+        <div class="fitbar__ctx"${chat ? '' : ' hidden'}>
           <span class="label-engraved">Context</span>
           <div style="flex:1;display:grid">
             <input type="range" min="0" max="${ctxStops().length - 1}" step="1" data-ctx aria-label="Context length">
@@ -313,7 +344,7 @@
           <button type="button" data-v="free" title="VRAM and RAM free right now">Free now</button>
           <button type="button" data-v="total" title="As if nothing else were loaded">Total</button>
         </div>
-        <select class="field field--sm" data-kv style="width:auto" title="KV cache type">
+        <select class="field field--sm" data-kv style="width:auto" title="KV cache type"${chat ? '' : ' hidden'}>
           <option value="f16">KV f16</option><option value="q8_0">KV q8_0</option><option value="q4_0">KV q4_0</option>
         </select>
         <div class="fitbar__note" data-shape-note></div>
@@ -324,7 +355,7 @@
       </div>` : `<div class="notice"><strong>No GGUF files in this repo.</strong> You can still download any of its files below. The fit check works for GGUF only.</div>`}
 
       ${proj.length ? `<div class="files">
-        <div class="files__cap label-engraved">Vision projectors (mmproj): needed for image input</div>
+        <div class="files__cap label-engraved">${r.vision_projector ? 'Vision projectors (mmproj): needed for image input' : 'Projectors (mmproj): add-on encoders the model needs for non-text input'}</div>
         ${proj.map(fileRow).join('')}</div>` : ''}
 
       ${r.other.length ? `<details class="others"${models.length ? '' : ' open'}><summary>Other files (${r.other.length})</summary>
@@ -427,7 +458,9 @@
     const note = $('[data-shape-note]');
     if (note) {
       const s = state.shape;
-      note.textContent = state.shapeState === 'loading' ? 'Reading the GGUF header from Hugging Face…'
+      note.textContent = !isChatModel(state.repo.types)
+        ? `Not a chat model, so there is no context cache: the estimate is the file plus runtime overhead, judged against ${state.settings.judge === 'free' ? 'what is free right now' : 'total VRAM and RAM'}. Diffusion and audio runtimes may also load extra encoders.`
+        : state.shapeState === 'loading' ? 'Reading the GGUF header from Hugging Face…'
         : state.shapeState === 'failed' ? 'Could not read the GGUF header: showing a rough estimate from file size.'
         : s ? `${s.architecture} · ${s.layers} layers${s.layer_kind.includes('linear') ? ` (${s.layer_kind.filter((k) => k === 'full').length} full-attention)` : s.layer_kind.includes('swa') ? ` (sliding window ${s.sliding_window})` : ''} · estimate, judged against ${state.settings.judge === 'free' ? 'what is free right now' : 'total VRAM and RAM'}`
         : '';
@@ -707,6 +740,14 @@
       call('settings', { sort: state.sort }).then((s) => (state.settings = s)).catch(() => {});
       runSearch();
     }));
+    const types = $('[data-type]');
+    markSeg(types, state.typeFilter);
+    $$('button', types).forEach((b) => b.addEventListener('click', () => {
+      if (state.typeFilter === b.dataset.v) return;
+      state.typeFilter = b.dataset.v; markSeg(types, state.typeFilter);
+      call('settings', { type_filter: state.typeFilter }).then((s) => (state.settings = s)).catch(() => {});
+      runSearch();
+    }));
     const g = $('[data-gguf]');
     g.checked = state.gguf;
     g.addEventListener('change', () => { state.gguf = g.checked; call('settings', { gguf_only: g.checked }).catch(() => {}); runSearch(); });
@@ -726,6 +767,7 @@
     state.settings = init.settings; state.machine = init.machine; state.jobs = init.queue;
     state.user = init.user; state.version = init.version; state.dataDir = init.data_dir;
     state.sort = init.settings.sort; state.gguf = init.settings.gguf_only;
+    state.typeFilter = init.settings.type_filter || 'all';
     wire();
     renderMachine();
     renderQueue();

@@ -72,6 +72,17 @@
           <label class="toggle"><input type="checkbox" data-gguf checked><span class="toggle__track"></span><span>GGUF only</span></label>
           <span class="filters__meta" data-results-meta></span>
         </div>
+        <div class="filters filters--types">
+          <div class="seg seg--types" role="radiogroup" aria-label="Model type" data-type>
+            <button type="button" data-v="all">All</button>
+            <button type="button" data-v="text"><i class="ph-duotone ph-chat-text"></i>Text</button>
+            <button type="button" data-v="vision"><i class="ph-duotone ph-eye"></i>Vision</button>
+            <button type="button" data-v="audio"><i class="ph-duotone ph-waveform"></i>Audio</button>
+            <button type="button" data-v="image"><i class="ph-duotone ph-image"></i>Image</button>
+            <button type="button" data-v="video"><i class="ph-duotone ph-film-strip"></i>Video</button>
+            <button type="button" data-v="embeddings"><i class="ph-duotone ph-graph"></i>Embeddings</button>
+          </div>
+        </div>
         <div class="hero" data-hero>
           <h1 class="hero__title headline-silver" data-split>Pull the right model.</h1>
           <p class="hero__sub">Search Hugging Face live, or paste any model link. Every file is checked against your GPU, RAM and disk before you download it.</p>

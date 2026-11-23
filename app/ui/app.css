@@ -201,6 +201,9 @@ select.field { padding-right: 30px; }
 .chip { display: inline-flex; align-items: center; gap: 5px; height: 22px; padding: 0 9px; border-radius: 999px; border: 1px solid var(--border); color: var(--silver-light); font-size: 11.5px; white-space: nowrap; background: rgba(13,13,13,.6); }
 .chip--quant { font-family: var(--font-mono); font-size: 11px; color: var(--silver-highlight); border-color: rgba(255,255,255,.16); }
 .chip--dim { color: var(--text-secondary); }
+.chip.chip--type i { color: var(--silver-mid); margin-right: 0; font-size: 12.5px; }
+.chip--type.chip--dim { border-style: dashed; }
+.chip.chip--type.chip--dim i { color: var(--text-dim); }
 
 /* ── Search ──────────────────────────────────────────────────────────── */
 .searchbar {
@@ -220,6 +223,11 @@ select.field { padding-right: 30px; }
 
 .filters { display: flex; align-items: center; gap: var(--sp-4); margin: var(--sp-4) 0 var(--sp-5); flex-wrap: wrap; }
 .filters__meta { margin-left: auto; color: var(--text-secondary); font-size: var(--fs-small); }
+.filters--types { margin-top: calc(-1 * var(--sp-3)); }
+.seg--types { flex-wrap: wrap; }
+.seg--types button { display: inline-flex; align-items: center; gap: 6px; }
+.seg--types button i { font-size: 14px; }
+.result__types { display: inline-flex; gap: 6px; }
 
 .hero { position: relative; isolation: isolate; padding: 7vh 0 4vh; text-align: center; }
 .hero::before {   /* §3.4: a soft dark halo so the metal keeps its edges over bright Mist */

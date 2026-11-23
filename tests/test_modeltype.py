@@ -61,6 +61,10 @@ class ClassifyTest(unittest.TestCase):
         self.assertEqual(r["types"], ["text"])
         self.assertEqual(r["buckets"], ["text"])
 
+    def test_generic_audio_badge_dropped_when_specific_one_exists(self):
+        r = classify("text-to-speech", ["automatic-speech-recognition", "audio-to-audio", "speech"], [])
+        self.assertEqual(r["types"], ["stt", "tts"])
+
     def test_speech_both_ways(self):
         r = classify("text-to-speech", ["automatic-speech-recognition"], [])
         self.assertEqual(r["types"], ["stt", "tts"])

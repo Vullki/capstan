@@ -95,6 +95,8 @@ def classify(pipeline_tag: str | None, tags: list[str] | None, files: list[str] 
         found.discard("vision")
         found.add("vision_no_proj")
 
+    if found & (_AUDIO - {"audio"}):
+        found.discard("audio")   # "Audio" adds nothing next to Speech-to-text / TTS / Music
     types = [t for t in _ORDER if t in found] or ["unlabeled"]
     buckets = [b for b, members in _BUCKETS.items() if found & members]
     return {"types": types, "buckets": buckets, "vision_projector": vision_projector}

@@ -43,12 +43,17 @@ def overhead_bytes(shape: dict | None, ctx: int) -> int:
     return int(CUDA_CONTEXT + 0.15 * GB + logits + activations + attention)
 
 
-def estimate(size: int, shape: dict | None, ctx: int, vram: int, ram: int, kv_bytes: float = 2.0) -> dict:
-    """size: file bytes; vram/ram: bytes available to judge against."""
+def estimate(size: int, shape: dict | None, ctx: int, vram: int, ram: int, kv_bytes: float = 2.0,
+             text: bool = True) -> dict:
+    """size: file bytes; vram/ram: bytes available to judge against.
+    text=False: not a chat model (image/video/music/TTS/embeddings), so no KV cache."""
     if shape and shape.get("context_max"):
         ctx = min(ctx, shape["context_max"])
-    kv = kv_cache_bytes(shape, ctx, kv_bytes) if shape else int(size * 0.10)
-    over = overhead_bytes(shape, ctx)
+    if text:
+        kv = kv_cache_bytes(shape, ctx, kv_bytes) if shape else int(size * 0.10)
+        over = overhead_bytes(shape, ctx)
+    else:
+        kv, over = 0, overhead_bytes(None, 0)
     need = size + kv + over
     vram_ok = vram * MARGIN
     usable = vram_ok + ram * 0.90          # what the "won't run" check actually compares against
