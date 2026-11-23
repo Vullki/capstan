@@ -1,0 +1,33 @@
+# Python
+__pycache__/
+*.pyc
+.venv/
+dist/
+build/
+
+# Secrets and local config
+.env
+.env.*
+
+# Private session memory and agent tooling: never publish
+.remember/
+.claude/
+CLAUDE.md
+
+# Downloads in progress
+*.incomplete
+*.part
+*.part.bad
+
+# Satoshi is a Fontshare closed-source font (ITF Free Font License):
+# it is downloaded on first run, not redistributed here.
+app/ui/assets/fonts/Satoshi-*.woff2
+
+# Original icon handoff files (their contents live in design/icon/)
+/capstan-icon.zip
+/capstan-256.png
+
+# OS
+Thumbs.db
+desktop.ini
+.DS_Store

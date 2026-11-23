@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" width="256" height="256">
+  <!-- Capstan small mark (16–32 px): same silhouette, no facets or grain,
+       a thicker landing bar and a bigger crimson eye so it survives tiny sizes. -->
+  <defs>
+    <linearGradient id="s" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#E6E6E6"/>
+      <stop offset=".45" stop-color="#B0B0B0"/>
+      <stop offset="1" stop-color="#5A5A5A"/>
+    </linearGradient>
+  </defs>
+  <rect x="0" y="0" width="256" height="256" rx="52" fill="#050505"/>
+  <rect x="3" y="3" width="250" height="250" rx="50" fill="none" stroke="#808080" stroke-opacity=".5" stroke-width="6"/>
+  <path d="M44 118 L64 22 L106 80 L128 88 L150 80 L192 22 L212 118 L230 136 L216 144 L236 162 L184 172 L128 220 L72 172 L20 162 L40 144 L26 136 Z" fill="url(#s)"/>
+  <path d="M66 50 L98 86 L74 104 Z" fill="#141414"/>
+  <path d="M190 50 L158 86 L182 104 Z" fill="#141414"/>
+  <path d="M82 122 L118 133 L96 144 Z" fill="#050505"/>
+  <path d="M174 122 L138 133 L160 144 Z" fill="#E0141F"/>
+  <path d="M114 190 L142 190 L128 206 Z" fill="#050505"/>
+  <rect x="80" y="228" width="96" height="14" rx="7" fill="#C2C2C2"/>
+</svg>

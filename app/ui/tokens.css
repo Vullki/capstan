@@ -1,0 +1,98 @@
+/* Capstan · design tokens
+   Source of truth: design/DESIGN.md ("Brushed Silver Noir" v2, system 1.1.0).
+   Section 1 is copied unchanged from DESIGN.md §2.
+   Section 2 adds the tokens a desktop app needs (density, status, data), built only
+   from the system's own greys plus the brand's single crimson wolf-eye accent. */
+
+/* ── 1. Brushed Silver Noir core (DESIGN.md §2, unchanged) ───────────── */
+:root {
+  /* Surfaces */
+  --bg:               #000000;
+  --surface:          #0D0D0D;
+  --surface-nav:      rgba(0, 0, 0, 0.80);
+  --border:           rgba(255, 255, 255, 0.10);
+
+  /* Brushed silver-charcoal (headlines, labels) */
+  --silver-highlight: #DCDCDC;
+  --silver-light:     #C2C2C2;
+  --silver-mid:       #808080;
+  --silver-charcoal:  #464646;
+  --silver-gradient:  linear-gradient(180deg, #DCDCDC 0%, #C2C2C2 30%, #808080 62%, #464646 100%);
+
+  /* Reading text */
+  --text-body:        #E6E4DF;
+  --text-secondary:   rgba(230, 228, 223, 0.60);
+
+  /* Single accent */
+  --accent-star:      #FFD700;  /* review stars only; unused in this app */
+
+  /* Fonts (bundled locally in assets/fonts so the app works offline) */
+  --font-display: "Satoshi", "Inter Display", "Inter", system-ui, sans-serif;  /* Satoshi arrives on first run */
+  --font-title:   "Plus Jakarta Sans", "Inter", system-ui, sans-serif;
+  --font-body:    "Inter Display", "Inter", system-ui, sans-serif;
+
+  /* Glass blur levels */
+  --blur-button:  5px;
+  --blur-label:   6px;
+  --blur-nav:     12px;
+  --blur-card:    50px;
+  --blur-pill:    68px;
+
+  /* Radii in use */
+  --radius-xs: 4px;
+  --radius-sm: 17px;
+  --radius-md: 20px;
+  --radius-lg: 48px;
+
+  /* Easing */
+  --ease-standard: cubic-bezier(0.44, 0, 0.56, 1);
+  --ease-out-soft: cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* ── 2. App additions ─────────────────────────────────────────────────── */
+:root {
+  /* Surface steps for dense UI: rows, hover, selection.
+     Values match the PotPlayer DARK Noir skin's menus. */
+  --surface-sunken:   #090909;
+  --surface-raised:   #141416;
+  --row-hover:        #1E1E20;
+  --hairline:         #2C2C2E;
+  --text-dim:         #525254;
+
+  /* App type scale. DESIGN.md §4 is sized for marketing pages (92px H1),
+     so the app uses a compact scale with the same fonts and character. */
+  --fs-hero:    40px;   /* Satoshi 400, silver gradient: window title, empty states */
+  --fs-h2:      24px;   /* Satoshi 500, silver gradient: panel titles */
+  --fs-h3:      17px;   /* Plus Jakarta Sans 600: card titles, repo names */
+  --fs-body:    14px;   /* Inter Display 400 */
+  --fs-small:   12.5px; /* meta, sizes, timestamps */
+  --fs-label:   11px;   /* engraved labels, uppercase, 0.3em tracking */
+  --font-mono:  "JetBrains Mono", "Cascadia Mono", Consolas, monospace; /* repo IDs, paths, numbers */
+
+  /* Spacing (4px grid) */
+  --sp-1: 4px;  --sp-2: 8px;  --sp-3: 12px; --sp-4: 16px;
+  --sp-5: 24px; --sp-6: 32px; --sp-7: 48px;
+
+  /* Fit status ("machine status" indicator).
+     The system keeps colour out, so status reads first through shape, fill and
+     words. Brightness carries the level. Crimson is the brand's one exception
+     (the wolf eye) and is used only for "won't run". */
+  --fit-full:     #DCDCDC;   /* fits in VRAM: solid bright silver, full gauge */
+  --fit-partial:  #808080;   /* partial offload: mid silver, half gauge */
+  --fit-none:     #B3121B;   /* won't run: crimson wolf eye, empty gauge */
+  --fit-unknown:  #464646;   /* not checked yet: charcoal, dashed gauge */
+  --fit-glow-none: 0 0 12px rgba(179, 18, 27, 0.55);
+
+  /* Progress bars: brushed metal filling a sunken track */
+  --progress-track: #090909;
+  --progress-fill:  linear-gradient(90deg, #464646 0%, #808080 45%, #C2C2C2 85%, #DCDCDC 100%);
+
+  /* Motion, app-sized. DESIGN.md §6 springs, shortened for repeated UI use. */
+  --dur-fast: 160ms;
+  --dur-ui:   320ms;
+  --dur-in:   600ms;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :root { --dur-fast: 0ms; --dur-ui: 0ms; --dur-in: 0ms; }
+}

@@ -1,0 +1,12 @@
+# Store text with LF in the repo; check out with the platform's default.
+* text=auto
+
+# Windows scripts must keep CRLF
+*.bat text eol=crlf
+*.ps1 text eol=crlf
+
+# Binary assets
+*.png binary
+*.ico binary
+*.woff2 binary
+*.zip binary

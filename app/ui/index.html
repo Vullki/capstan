@@ -1,0 +1,132 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Capstan</title>
+  <link rel="icon" href="assets/capstan-32.png?v=1.2.0">
+  <link rel="stylesheet" href="tokens.css">
+  <link rel="stylesheet" href="assets/icons/phosphor-duotone.css">
+  <link rel="stylesheet" href="app.css">
+</head>
+<body>
+  <canvas class="mist" data-mist aria-hidden="true"></canvas>
+  <div class="grain" aria-hidden="true"></div>
+
+  <!-- Title bar (frameless window, drag region) -->
+  <header class="titlebar" data-drag>
+    <div class="brand">
+      <img class="brand__icon" src="assets/capstan-256.png?v=1.2.0" alt="" width="20" height="20">
+      <span class="brand__mark headline-silver" data-split>CΛPSTΛN</span>
+      <span class="brand__tag label-engraved">The BlackWolf</span>
+    </div>
+    <div class="winctl">
+      <button type="button" class="winctl__btn" data-win="minimize" aria-label="Minimize"><i class="ph-duotone ph-minus"></i></button>
+      <button type="button" class="winctl__btn" data-win="toggle_maximize" aria-label="Maximize"><i class="ph-duotone ph-square"></i></button>
+      <button type="button" class="winctl__btn winctl__btn--close" data-win="close" aria-label="Close"><i class="ph-duotone ph-x"></i></button>
+    </div>
+  </header>
+
+  <!-- Machine strip -->
+  <section class="machine" aria-label="Machine status" data-machine>
+    <div class="machine__item machine__gpu">
+      <span class="label-engraved" data-gpu-name>GPU</span>
+      <div class="vram" data-vram role="img" aria-label="VRAM"></div>
+      <span class="machine__val" data-gpu-val>—</span>
+      <span class="machine__who" data-gpu-who></span>
+    </div>
+    <div class="machine__item">
+      <span class="label-engraved">RAM</span>
+      <div class="minibar"><span data-ram-bar></span></div>
+      <span class="machine__val" data-ram-val>—</span>
+    </div>
+    <div class="machine__item machine__drives" data-drives></div>
+  </section>
+
+  <div class="shell">
+    <!-- Rail -->
+    <nav class="rail" aria-label="Sections">
+      <button type="button" class="rail__btn is-active" data-view="search"><i class="ph-duotone ph-magnifying-glass"></i><span>Search</span></button>
+      <button type="button" class="rail__btn" data-view="library"><i class="ph-duotone ph-books"></i><span>Library</span></button>
+      <button type="button" class="rail__btn" data-view="queue"><i class="ph-duotone ph-download-simple"></i><span>Queue</span><b class="rail__badge" data-queue-badge hidden></b></button>
+      <div class="rail__spacer"></div>
+      <button type="button" class="rail__btn" data-view="settings"><i class="ph-duotone ph-gear-six"></i><span>Settings</span></button>
+    </nav>
+
+    <main class="main" id="main">
+      <!-- SEARCH -->
+      <section class="view view--search is-active" data-pane="search">
+        <div class="searchbar">
+          <i class="ph-duotone ph-magnifying-glass searchbar__icon"></i>
+          <input type="text" class="searchbar__input" data-q placeholder="Search the Hub, or paste a Hugging Face link" autocomplete="off" spellcheck="false" autofocus>
+          <span class="searchbar__spin" data-spin hidden></span>
+          <kbd class="searchbar__kbd">Ctrl K</kbd>
+        </div>
+        <div class="filters">
+          <div class="seg" role="radiogroup" aria-label="Sort" data-sort>
+            <button type="button" data-v="downloads">Downloads</button>
+            <button type="button" data-v="trending">Trending</button>
+            <button type="button" data-v="likes">Liked</button>
+            <button type="button" data-v="updated">Newest</button>
+          </div>
+          <label class="toggle"><input type="checkbox" data-gguf checked><span class="toggle__track"></span><span>GGUF only</span></label>
+          <span class="filters__meta" data-results-meta></span>
+        </div>
+        <div class="hero" data-hero>
+          <h1 class="hero__title headline-silver" data-split>Pull the right model.</h1>
+          <p class="hero__sub">Search Hugging Face live, or paste any model link. Every file is checked against your GPU, RAM and disk before you download it.</p>
+        </div>
+        <div class="results" data-results></div>
+      </section>
+
+      <!-- REPO -->
+      <section class="view view--repo" data-pane="repo"></section>
+
+      <!-- QUEUE -->
+      <section class="view view--queue" data-pane="queue">
+        <div class="viewhead">
+          <h2 class="viewhead__title headline-silver" data-split>Queue</h2>
+          <button type="button" class="btn btn--ghost btn--sm" data-clear-finished><i class="ph-duotone ph-broom"></i>Clear finished</button>
+        </div>
+        <div class="jobs" data-jobs></div>
+      </section>
+
+      <!-- LIBRARY -->
+      <section class="view view--library" data-pane="library">
+        <div class="viewhead">
+          <h2 class="viewhead__title headline-silver" data-split>Library</h2>
+          <span class="viewhead__meta" data-lib-meta></span>
+          <input type="search" class="field field--sm" data-lib-filter placeholder="Filter" spellcheck="false">
+          <button type="button" class="btn btn--ghost btn--sm" data-lib-refresh><i class="ph-duotone ph-arrows-clockwise"></i>Rescan</button>
+        </div>
+        <div class="table" data-lib></div>
+      </section>
+
+      <!-- SETTINGS -->
+      <section class="view view--settings" data-pane="settings"></section>
+    </main>
+  </div>
+
+  <div class="toasts" data-toasts aria-live="polite"></div>
+
+  <!-- resize edges: the frameless window has no native border -->
+  <div class="grip grip--n" data-grip="n"></div><div class="grip grip--s" data-grip="s"></div>
+  <div class="grip grip--e" data-grip="e"></div><div class="grip grip--w" data-grip="w"></div>
+  <div class="grip grip--ne" data-grip="ne"></div><div class="grip grip--nw" data-grip="nw"></div>
+  <div class="grip grip--se" data-grip="se"></div><div class="grip grip--sw" data-grip="sw"></div>
+
+  <dialog class="dialog" data-dialog>
+    <form method="dialog" class="dialog__box">
+      <h3 class="dialog__title" data-dialog-title></h3>
+      <p class="dialog__body" data-dialog-body></p>
+      <div class="dialog__actions">
+        <button class="btn btn--ghost" value="cancel">Cancel</button>
+        <button class="btn btn--primary" value="ok" data-dialog-ok>OK</button>
+      </div>
+    </form>
+  </dialog>
+
+  <script src="mist.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
