@@ -58,6 +58,24 @@ class HfLoginTest(unittest.TestCase):
         self.assertIn("hf_", r["error"])
         who.assert_not_called()
 
+    def test_logout_removes_only_the_active_token(self):
+        from huggingface_hub import constants
+        tmp = tempfile.mkdtemp()
+        try:
+            active, stored = os.path.join(tmp, "token"), os.path.join(tmp, "stored_tokens")
+            for p in (active, stored):
+                with open(p, "w") as f:
+                    f.write("x")
+            a = api_mod.Api.__new__(api_mod.Api)
+            with mock.patch.object(constants, "HF_TOKEN_PATH", active), \
+                 mock.patch.object(api_mod.Api, "_whoami", return_value=None):
+                self.assertEqual(a.hf_logout(), {"user": None})
+                self.assertEqual(a.hf_logout(), {"user": None})   # twice: already logged out is fine
+            self.assertFalse(os.path.exists(active))
+            self.assertTrue(os.path.exists(stored))              # the hf CLI's other tokens stay
+        finally:
+            shutil.rmtree(tmp)
+
 
 if __name__ == "__main__":
     unittest.main()

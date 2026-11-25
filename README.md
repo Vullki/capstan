@@ -63,7 +63,7 @@ Capstan answers that **before** the download. It reads each model's header strai
 
 ## Install
 
-**Needs:** Windows 10 (version 2004 or later) or Windows 11, 64-bit. Edge WebView2 is built into Windows 11. An NVIDIA GPU is needed for the VRAM readings and fit lights; without one the app still searches and downloads.
+**Needs:** Windows 10 (version 2004 or later) or Windows 11, 64-bit. Edge WebView2 is built into Windows 11 and arrives with updates on Windows 10; if the window stays blank on an older or LTSC Windows 10, install the [WebView2 Runtime](https://developer.microsoft.com/microsoft-edge/webview2/). An NVIDIA GPU is needed for the VRAM readings and fit lights; without one the app still searches and downloads.
 
 ### Microsoft Store (recommended)
 

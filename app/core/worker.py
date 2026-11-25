@@ -72,7 +72,7 @@ def main() -> int:
             with session.stream("GET", url, headers=h, follow_redirects=True, timeout=60) as r:
                 if r.status_code in (401, 403):
                     emit(type="error", message="No access: this repo is gated or private. Request access on "
-                                               "Hugging Face, then run `hf auth login`.")
+                                               "Hugging Face, then log in under Settings → Hugging Face account.")
                     return 2
                 if r.status_code == 404:
                     emit(type="error", message="File not found on Hugging Face (it may have been removed).")

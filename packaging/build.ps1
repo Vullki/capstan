@@ -28,8 +28,9 @@ $py = Join-Path $root '.venv\Scripts\python.exe'
 if (-not (Test-Path $py)) { throw ".venv not found. See packaging\README.md." }
 
 # One version for everything: VERSION in app\api.py.
-$ver = (Select-String -Path (Join-Path $root 'app\api.py') -Pattern '^VERSION = "([0-9]+\.[0-9]+\.[0-9]+)"').Matches[0].Groups[1].Value
-if (-not $ver) { throw 'VERSION not found in app\api.py' }
+$m = Select-String -Path (Join-Path $root 'app\api.py') -Pattern '^VERSION = "([0-9]+\.[0-9]+\.[0-9]+)"'
+if (-not $m) { throw 'VERSION = "x.y.z" not found in app\api.py' }
+$ver = $m.Matches[0].Groups[1].Value
 $v = $ver.Split('.')
 Write-Host "Capstan $ver" -ForegroundColor White
 
@@ -74,7 +75,7 @@ if ($Skip -notcontains 'installer') {
 if ($Skip -notcontains 'msix') {
   $idFile = Join-Path $pkg 'msix\identity.json'
   if (-not (Test-Path $idFile)) { $idFile = Join-Path $pkg 'msix\identity.example.json' }
-  $id = Get-Content -Raw $idFile | ConvertFrom-Json
+  $id = Get-Content -Raw -Encoding UTF8 $idFile | ConvertFrom-Json
   if ($idFile -like '*example*') { Write-Warning 'Using placeholder Store identity (msix\identity.example.json): fine for testing, not for the Store.' }
 
   $sdk = Get-ChildItem "${env:ProgramFiles(x86)}\Windows Kits\10\bin\*\x64\makeappx.exe" -ErrorAction SilentlyContinue |
@@ -85,7 +86,7 @@ if ($Skip -notcontains 'msix') {
   if (Test-Path $layout) { Remove-Item -Recurse -Force $layout }
   Copy-Item -Recurse $app $layout
   Copy-Item -Recurse (Join-Path $pkg 'msix\Assets') (Join-Path $layout 'Assets')
-  $manifest = (Get-Content -Raw (Join-Path $pkg 'msix\AppxManifest.xml')).
+  $manifest = (Get-Content -Raw -Encoding UTF8 (Join-Path $pkg 'msix\AppxManifest.xml')).
     Replace('{{NAME}}', $id.name).Replace('{{PUBLISHER}}', $id.publisher).
     Replace('{{PUBLISHER_DISPLAY}}', $id.publisher_display).Replace('{{DISPLAY_NAME}}', $id.display_name).
     Replace('{{VERSION}}', "$ver.0")
@@ -95,6 +96,10 @@ if ($Skip -notcontains 'msix') {
   $makepri = Join-Path $sdk.DirectoryName 'makepri.exe'
   $pricfg = Join-Path $work 'priconfig.xml'
   Invoke-Tool 'makepri createconfig' { & $makepri createconfig /cf $pricfg /dq en-US /pv 10.0.0 /o } | Out-Null
+  # One .msix loads only resources.pri: drop the default <packaging> block, or makepri splits
+  # the 125% and 150% logos into resources.scale-*.pri files that never get read.
+  $cfg = [IO.File]::ReadAllText($pricfg) -replace '(?s)\s*<packaging>.*?</packaging>', ''
+  [IO.File]::WriteAllText($pricfg, $cfg, (New-Object Text.UTF8Encoding $false))
   Invoke-Tool 'makepri new' { & $makepri new /pr $layout /cf $pricfg /mn (Join-Path $layout 'AppxManifest.xml') /of (Join-Path $layout 'resources.pri') /o } | Out-Null
 
   $msix = Join-Path $out "Capstan-$ver.msix"

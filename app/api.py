@@ -95,15 +95,18 @@ class Api:
         except Exception:
             return {"error": "Hugging Face didn't accept that token. Check it at huggingface.co/settings/tokens."}
         login(token=token, add_to_git_credential=False, skip_if_logged_in=False)
-        return {"user": name}
+        # Whoever requests actually go out as (an HF_TOKEN variable wins over the saved token).
+        return {"user": self._whoami() or name}
 
     @_safe
     def hf_logout(self):
-        from huggingface_hub import logout
+        """Remove the active saved token only. huggingface_hub's logout() would also delete
+        every named token the hf CLI keeps, for every tool on the machine."""
+        from huggingface_hub import constants
         try:
-            logout()
-        except Exception:
-            pass   # no saved token: already logged out
+            os.remove(constants.HF_TOKEN_PATH)
+        except FileNotFoundError:
+            pass   # nothing saved: already logged out
         return {"user": self._whoami()}
 
     @_safe

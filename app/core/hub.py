@@ -235,7 +235,7 @@ def repo(repo_id: str, revision: str | None = None) -> dict:
                 files.append({"path": f.path, "size": f.size or 0, "sha256": sha})
     except GatedRepoError:
         return {"error": "gated", "repo_id": repo_id,
-                "message": "This repo is gated. Request access on its page, then log in with `hf auth login`."}
+                "message": "This repo is gated. Request access on its page, then log in under Settings → Hugging Face account."}
 
     gguf, others = group_gguf(files)
 

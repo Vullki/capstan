@@ -9,9 +9,9 @@ All notable changes to Capstan (called DΛЯK Pull before 1.2.0). The format fol
   - **Microsoft Store** (MSIX): Microsoft signs it and keeps it updated, with no SmartScreen warning.
   - **`Capstan-1.5.0-Setup.exe`** on GitHub Releases: a per-user install with no admin prompt, Start-menu shortcut, optional Desktop shortcut, and a clean uninstaller that keeps your settings and models. It isn't code-signed, so SmartScreen asks once ("More info → Run anyway").
 - **`packaging/`**: one command (`packaging\build.ps1`) builds the app bundle (PyInstaller), the installer (Inno Setup) and the Store package (MSIX with its logo set). Build dependencies are pinned in `packaging/requirements-lock.txt`.
-- **Hugging Face login in Settings.** Paste a read token to download gated models. It's checked with Hugging Face and saved where `hf auth login` keeps it, so the CLI and Capstan share it. Log out from the same place. (The installed app has no `hf` command, so this replaces "run `hf auth login`".)
+- **Hugging Face login in Settings.** Paste a read token to download gated models. It's checked with Hugging Face and saved where `hf auth login` keeps it, so the CLI and Capstan share it. Log out removes only that active token; the CLI's other saved tokens stay. (The installed app has no `hf` command, so this replaces "run `hf auth login`".)
 - **`PRIVACY.md`**: what Capstan sends, to whom, and what it stores (no telemetry, no analytics, no account).
-- **Tests** for the installed build: worker command, font migration, token check. 38 tests in all.
+- **Tests** for the installed build: worker command, font migration, token check. 39 tests in all.
 
 ### Changed
 - **Satoshi now lives in the data folder** (`%APPDATA%\Capstan\fonts`) instead of the app's own folder, which is read-only once installed. The UI loads it through the bridge. Existing copies are carried over on first run. It's still never bundled: the build stops if a Satoshi file ends up in the package.
