@@ -18,7 +18,7 @@ Everything Partner Center asks for, ready to paste. Language: English (United St
 | Copyright | `© 2026 VULLKI` |
 | Additional license terms | `MIT License: https://github.com/Vullki/capstan/blob/main/LICENSE` |
 | System requirements | Minimum: Windows 10 version 2004 (19041), x64, 8 GB RAM. Recommended: an NVIDIA GPU (for VRAM readings and fit lights) |
-| Restricted capability `runFullTrust` | Justification: "Capstan is a desktop (Win32) app packaged as MSIX. It needs full trust to read GPU memory through the NVIDIA driver (NVML), list the user's drives, and write downloaded model files to the folder the user picks." |
+| Restricted capability `runFullTrust` | Asked on the **Submission options** page; the box takes **500 characters max**. Used for submission 1 (445 chars): "Capstan is a Win32 desktop app (Python + Edge WebView2) packaged as MSIX, so it needs runFullTrust to run. It uses it only to: read GPU memory via the NVIDIA driver (NVML) plus free RAM and disk, to show whether an AI model fits before download; download model files from huggingface.co into a folder the user picks; open that folder in File Explorer. No admin rights, services, drivers or data collection. Open source: github.com/Vullki/capstan" |
 
 ## Short description (Store search results)
 
@@ -75,4 +75,11 @@ Category: **All other app types**. Answer **No** to every content question: no v
 
 ## Notes for certification
 
+Goes on **Supplemental info → Additional Testing Information** (no longer on Submission options).
+
+
 "Capstan downloads AI model files from Hugging Face (huggingface.co) to a folder the user chooses. It needs no account; to test, search for 'qwen3', open a repo, tick a small file and press Pull. An NVIDIA GPU enables the fit lights; without one the app still searches and downloads."
+
+## History
+
+- **Submission 1** (1.5.0): submitted 2026-11-25. Price $0 in the Default market group (240 markets); Properties privacy answer "Yes" (the Hugging Face token) so the privacy URL field appears; age-rating "Online Content" = Yes, everything else No.
