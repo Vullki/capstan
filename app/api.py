@@ -14,7 +14,7 @@ from concurrent.futures import ThreadPoolExecutor
 from core import fit, fonts, gguf, hub, machine, store
 from core.downloads import Queue
 
-VERSION = "1.4.1"
+VERSION = "1.5.0"
 _pool = ThreadPoolExecutor(max_workers=4)
 
 
@@ -68,7 +68,13 @@ class Api:
             threading.Thread(target=self._fetch_fonts, daemon=True).start()
         return {"version": VERSION, "settings": store.settings(), "machine": machine.snapshot(),
                 "queue": self._queue.snapshot(), "user": self._whoami(),
-                "open": self._open, "view": self._view, "data_dir": store.DATA_DIR}
+                "open": self._open, "view": self._view, "data_dir": store.DATA_DIR,
+                "fonts": fonts.present()}
+
+    @_safe
+    def font_data(self):
+        """Satoshi as base64 (it lives in the data folder, outside what the UI can load by URL)."""
+        return fonts.data()
 
     def _whoami(self):
         try:
@@ -76,6 +82,29 @@ class Api:
             return whoami().get("name")
         except Exception:
             return None
+
+    @_safe
+    def hf_login(self, token):
+        """Save a Hugging Face token, the same way `hf auth login` does (the installed app has no hf CLI)."""
+        token = (token or "").strip()
+        if not token.startswith("hf_"):
+            return {"error": "That isn't a Hugging Face token: they start with hf_."}
+        from huggingface_hub import login, whoami
+        try:
+            name = whoami(token=token).get("name")
+        except Exception:
+            return {"error": "Hugging Face didn't accept that token. Check it at huggingface.co/settings/tokens."}
+        login(token=token, add_to_git_credential=False, skip_if_logged_in=False)
+        return {"user": name}
+
+    @_safe
+    def hf_logout(self):
+        from huggingface_hub import logout
+        try:
+            logout()
+        except Exception:
+            pass   # no saved token: already logged out
+        return {"user": self._whoami()}
 
     @_safe
     def settings(self, patch=None):

@@ -63,7 +63,21 @@ Capstan answers that **before** the download. It reads each model's header strai
 
 ## Install
 
-**Needs:** Windows 10/11, Python 3.11+ and Edge WebView2 (built into Windows 11). An NVIDIA GPU is needed for the VRAM readings and fit lights; without one the app still searches and downloads.
+**Needs:** Windows 10 (version 2004 or later) or Windows 11, 64-bit. Edge WebView2 is built into Windows 11. An NVIDIA GPU is needed for the VRAM readings and fit lights; without one the app still searches and downloads.
+
+### Microsoft Store (recommended)
+
+Search for **Capstan** in the Microsoft Store, or use the link on the [releases page](https://github.com/Vullki/capstan/releases/latest). The Store build is signed by Microsoft and updates itself.
+
+### Installer from GitHub
+
+Download **`Capstan-<version>-Setup.exe`** from the [latest release](https://github.com/Vullki/capstan/releases/latest) and run it. It installs for your user only (no admin prompt) and adds Capstan to the Start menu. Python isn't needed: the app carries its own runtime.
+
+The installer isn't code-signed, so Windows SmartScreen will say "Windows protected your PC" the first time. Choose **More info → Run anyway**, or get the Store build, which has no warning. Uninstalling keeps your settings and every model you downloaded.
+
+### From source
+
+Needs Python 3.11+ (developed and tested on 3.14).
 
 ```powershell
 git clone https://github.com/Vullki/capstan.git
@@ -71,32 +85,33 @@ cd capstan
 python -m pip install -r requirements.txt
 ```
 
-**Run it:**
-- Double-click **`Capstan.bat`**, or
-- create a Desktop shortcut with the icon:
+Run it: double-click **`Capstan.bat`**, or create a Desktop shortcut with the icon:
 
 ```powershell
 Set-ExecutionPolicy -Scope Process Bypass; .\tools\install-shortcut.ps1 -StartMenu
 ```
 
-**Launch options:**
+To build the installer and the Store package yourself, see [`packaging/README.md`](packaging/README.md).
+
+**Launch options** (for the installed `Capstan.exe` or `Capstan.bat`):
 
 | Option | Does |
 |---|---|
 | `--open <repo or link>` | Opens a repo at start, e.g. `--open bartowski/Llama-3.2-3B-Instruct-GGUF` |
 | `--view library` | Starts on Library (also `queue`, `settings`) |
-| `--debug` | Console + WebView dev tools (or use `Capstan (debug).bat`) |
+| `--debug` | WebView dev tools (from source, `Capstan (debug).bat` also shows a console) |
 
-**Gated models:** run `hf auth login` once, then restart Capstan.
+**Gated models:** paste a Hugging Face read token in **Settings → Hugging Face account** (or run `hf auth login` once, if you have the CLI).
 
-**First run:** Capstan downloads its display font (Satoshi) from Fontshare once, in the background. Until then, and if you're offline, it uses the bundled Inter Display.
+**First run:** Capstan downloads its display font (Satoshi) from Fontshare once, in the background, into its data folder. Until then, and if you're offline, it uses the bundled Inter Display.
 
 ## Where things live
 
 | What | Where |
 |---|---|
 | Downloads | `D:\Models\<model>` by default (`%USERPROFILE%\Models` when there's no D:). Change it in Settings. |
-| Settings, queue, history, header cache | `%APPDATA%\Capstan\` (set `CAPSTAN_DATA` to use another folder) |
+| Settings, queue, history, header cache, Satoshi | `%APPDATA%\Capstan\` (set `CAPSTAN_DATA` to use another folder) |
+| The same, for the Microsoft Store build | Windows keeps a packaged app's data apart: `%LOCALAPPDATA%\Packages\<Capstan package>\LocalCache\Roaming\Capstan\`. It's removed when you uninstall the Store app. |
 
 ## Project layout
 
@@ -118,6 +133,12 @@ design/
   DESIGN.md          the Brushed Silver Noir design system the UI follows
   icon/              app icon: SVGs, .ico and PNG sizes (16–1024)
 tests/               unittest suite: python -m unittest discover -s tests
+packaging/
+  build.ps1          one command: app bundle, GitHub installer, Store package
+  capstan.spec       PyInstaller recipe (Satoshi is never bundled)
+  installer/         Inno Setup script for Capstan-<version>-Setup.exe
+  msix/              Store manifest, logo set and its generator
+  store/             Microsoft Store listing text and privacy policy
 tools/
   install-shortcut.ps1, capture.py
 docs/superpowers/    design specs and implementation plans

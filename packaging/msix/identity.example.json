@@ -1,0 +1,7 @@
+{
+  "_comment": "Placeholder identity for local test builds. Copy to identity.json and paste the values from Partner Center > Capstan > Product identity before a Store build.",
+  "name": "VULLKI.Capstan",
+  "publisher": "CN=00000000-0000-0000-0000-000000000000",
+  "publisher_display": "VULLKI",
+  "display_name": "Capstan"
+}

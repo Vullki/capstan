@@ -2,9 +2,7 @@
    Tokens: tokens.css. Rules: design/DESIGN.md §9. */
 
 /* ── Fonts (bundled) ─────────────────────────────────────────────────── */
-@font-face { font-family: "Satoshi"; src: url("assets/fonts/Satoshi-400.woff2") format("woff2"); font-weight: 400; font-display: swap; }
-@font-face { font-family: "Satoshi"; src: url("assets/fonts/Satoshi-500.woff2") format("woff2"); font-weight: 500; font-display: swap; }
-@font-face { font-family: "Satoshi"; src: url("assets/fonts/Satoshi-700.woff2") format("woff2"); font-weight: 700; font-display: swap; }
+/* Satoshi isn't bundled: app.js loadSatoshi() adds it from the data folder. */
 @font-face { font-family: "Inter Display"; src: url("assets/fonts/InterDisplay-Regular.woff2") format("woff2"); font-weight: 400; font-display: swap; }
 @font-face { font-family: "Inter Display"; src: url("assets/fonts/InterDisplay-Medium.woff2") format("woff2"); font-weight: 500; font-display: swap; }
 @font-face { font-family: "Inter Display"; src: url("assets/fonts/InterDisplay-SemiBold.woff2") format("woff2"); font-weight: 600; font-display: swap; }

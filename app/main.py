@@ -4,10 +4,18 @@ from __future__ import annotations
 import os
 import sys
 
-import webview
-
-HERE = os.path.dirname(os.path.abspath(__file__))
+# Installed build (PyInstaller): the app's files sit in sys._MEIPASS; from source, next to this file.
+HERE = getattr(sys, "_MEIPASS", None) or os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, HERE)
+
+# Each download runs in its own process. From source that is "python -m core.worker";
+# the installed build has no python.exe, so it starts itself again with --worker.
+if __name__ == "__main__" and len(sys.argv) > 2 and sys.argv[1] == "--worker":
+    from core import worker
+    sys.argv = [sys.argv[0], sys.argv[2]]
+    sys.exit(worker.main())
+
+import webview  # noqa: E402
 
 from api import Api  # noqa: E402
 from core import store  # noqa: E402
@@ -17,9 +25,22 @@ APP_ID = "BlackWolf.Capstan"   # must match the shortcut (tools/install-shortcut
 ICON = os.path.join(HERE, "ui", "assets", "capstan.ico")
 
 
+def _is_packaged() -> bool:
+    """True inside the Microsoft Store (MSIX) package, where Windows owns the app's identity."""
+    if sys.platform != "win32":
+        return False
+    try:
+        import ctypes
+        n = ctypes.c_uint32(0)
+        # ERROR_INSUFFICIENT_BUFFER (122) = has a package; APPMODEL_ERROR_NO_PACKAGE (15700) = doesn't
+        return ctypes.windll.kernel32.GetCurrentPackageFullName(ctypes.byref(n), None) == 122
+    except Exception:
+        return False
+
+
 def _set_app_id():
     """Own taskbar group and icon, instead of being grouped under Python."""
-    if sys.platform == "win32":
+    if sys.platform == "win32" and not _is_packaged():   # a packaged app already has its own ID
         try:
             import ctypes
             ctypes.windll.shell32.SetCurrentProcessExplicitAppUserModelID(APP_ID)

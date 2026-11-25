@@ -31,3 +31,8 @@ app/ui/assets/fonts/Satoshi-*.woff2
 Thumbs.db
 desktop.ini
 .DS_Store
+
+# Release builds (packaging/build.ps1)
+/packaging/build/
+/packaging/dist/
+/packaging/out/

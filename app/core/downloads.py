@@ -11,8 +11,15 @@ import uuid
 
 from . import hub, store
 
-APP_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+APP_DIR = getattr(sys, "_MEIPASS", None) or os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 _NO_WINDOW = 0x08000000 if sys.platform == "win32" else 0
+
+
+def worker_cmd(payload: str) -> list[str]:
+    """The command that runs one download (see core/worker.py)."""
+    if getattr(sys, "frozen", False):            # installed build: Capstan.exe --worker <job>
+        return [sys.executable, "--worker", payload]
+    return [sys.executable, "-m", "core.worker", payload]
 
 
 class Queue:
@@ -161,7 +168,7 @@ class Queue:
                    "revision": j["revision"], "size": j["size"],
                    "sha256": j["sha256"] if store.settings().get("verify", True) else None}
         env = {**os.environ, "PYTHONIOENCODING": "utf-8"}
-        p = subprocess.Popen([sys.executable, "-m", "core.worker", json.dumps(payload)], cwd=APP_DIR,
+        p = subprocess.Popen(worker_cmd(json.dumps(payload)), cwd=APP_DIR,
                              stdout=subprocess.PIPE, stderr=subprocess.DEVNULL, text=True,
                              encoding="utf-8", env=env, creationflags=_NO_WINDOW)
         self.procs[j["id"]] = p

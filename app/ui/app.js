@@ -656,7 +656,10 @@
           <div class="set__c"><div class="seg" data-conc>${[1, 2, 3].map((n) => `<button type="button" data-v="${n}">${n}</button>`).join('')}</div></div></div>
         <div class="set"><div><div class="set__t">Verify downloads</div><div class="set__d">Check every file against Hugging Face’s SHA-256 after downloading. Takes a few seconds per GB.</div></div>
           <div class="set__c"><label class="toggle"><input type="checkbox" data-verify ${s.verify ? 'checked' : ''}><span class="toggle__track"></span></label></div></div>
-        <div class="set"><div><div class="set__t">Hugging Face account</div><div class="set__d">${state.user ? `Logged in as <span class="set__path">${esc(state.user)}</span>. Gated repos you have access to will download.` : 'Not logged in. Public models work; for gated ones run <code>hf auth login</code> in a terminal, then restart Capstan.'}</div></div><div></div></div>
+        <div class="set"><div><div class="set__t">Hugging Face account</div><div class="set__d">${state.user ? `Logged in as <span class="set__path">${esc(state.user)}</span>. Gated repos you have access to will download.` : 'Not logged in. Public models work. For gated ones, paste a read token from huggingface.co/settings/tokens. It’s saved where <code>hf auth login</code> keeps it.'}</div></div>
+          <div class="set__c">${state.user
+            ? '<button type="button" class="btn btn--ghost btn--sm" data-hf-logout><i class="ph-duotone ph-sign-out"></i>Log out</button>'
+            : '<input type="password" class="field field--sm" data-hf-token placeholder="hf_…" autocomplete="off" spellcheck="false"><button type="button" class="btn btn--ghost btn--sm" data-hf-login><i class="ph-duotone ph-sign-in"></i>Log in</button>'}</div></div>
         <div class="set"><div><div class="set__t">How the fit check works</div><div class="set__d">Capstan reads each model’s GGUF header from Hugging Face without downloading the file, then adds up weights, KV cache at your chosen context, and CUDA overhead. “Fits” keeps a 5% safety margin. It is an estimate: llama.cpp, LM Studio and Ollama differ slightly.</div></div><div></div></div>
       </div>
       <p class="about">CΛPSTΛN ${esc(state.version)} · by DΛЯK · The BlackWolf · data in ${esc(state.dataDir || '')}</p>`;
@@ -665,6 +668,18 @@
     markSeg(conc, String(s.concurrency));
     $$('button', conc).forEach((b) => b.addEventListener('click', async () => { state.settings = await call('settings', { concurrency: +b.dataset.v }); markSeg(conc, b.dataset.v); }));
     $('[data-verify]', pane).addEventListener('change', async (e) => { state.settings = await call('settings', { verify: e.target.checked }); });
+    const hfIn = $('[data-hf-token]', pane);
+    const hfLogin = async () => {
+      const r = await call('hf_login', hfIn.value).catch((e) => ({ error: e.message }));
+      if (r.error) { toast(r.error, 'err'); return; }
+      state.user = r.user; toast(`Logged in as ${r.user}.`, 'ok', 'ph-check-circle'); renderSettings();
+    };
+    $('[data-hf-login]', pane)?.addEventListener('click', hfLogin);
+    hfIn?.addEventListener('keydown', (e) => { if (e.key === 'Enter') hfLogin(); });
+    $('[data-hf-logout]', pane)?.addEventListener('click', async () => {
+      const r = await call('hf_logout').catch(() => ({ user: state.user }));
+      state.user = r.user; toast(r.user ? `Still logged in as ${r.user} (HF_TOKEN is set).` : 'Logged out of Hugging Face.'); renderSettings();
+    });
     $('[data-pick-root]', pane).addEventListener('click', async () => {
       const p = await call('choose_folder', s.download_root).catch(() => null);
       if (p) { state.settings = await call('settings', { download_root: p }); renderSettings(); renderMachine(); }
@@ -682,10 +697,7 @@
   window.DP = {
     onEvent(ev) {
       if (ev.type === 'fonts') {
-        // Satoshi just arrived from Fontshare: load it now instead of waiting for a restart.
-        const t = Date.now();
-        Promise.all(ev.weights.map((w) => new FontFace('Satoshi', `url(assets/fonts/Satoshi-${w}.woff2?${t})`, { weight: String(w) })
-          .load().then((f) => document.fonts.add(f)).catch(() => {}))).then(() => document.body.classList.add('has-satoshi'));
+        loadSatoshi();   // just arrived from Fontshare: load it now instead of waiting for a restart
       } else if (ev.type === 'window') {
         document.body.classList.toggle('is-maximized', !!ev.maximized);
       } else if (ev.type === 'queue') {
@@ -763,8 +775,21 @@
     });
   }
 
+  // Satoshi lives in the data folder (the install folder is read-only), so it comes
+  // through the bridge as base64 and is handed to the browser as a FontFace.
+  async function loadSatoshi() {
+    const files = await call('font_data').catch(() => ({}));
+    await Promise.all(Object.entries(files || {}).map(([w, b64]) => {
+      const bytes = Uint8Array.from(atob(b64), (c) => c.charCodeAt(0));
+      return new FontFace('Satoshi', bytes.buffer, { weight: w }).load()
+        .then((f) => document.fonts.add(f)).catch(() => {});
+    }));
+    if (Object.keys(files || {}).length) document.body.classList.add('has-satoshi');
+  }
+
   async function boot() {
     const init = await call('init');
+    if (init.fonts?.length) loadSatoshi();
     state.settings = init.settings; state.machine = init.machine; state.jobs = init.queue;
     state.user = init.user; state.version = init.version; state.dataDir = init.data_dir;
     state.sort = init.settings.sort; state.gguf = init.settings.gguf_only;
