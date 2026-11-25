@@ -1,4 +1,4 @@
-# Microsoft Store listing: Capstan
+# Microsoft Store listing: Capstan by VULLKI
 
 Everything Partner Center asks for, ready to paste. Language: English (United States).
 
@@ -6,7 +6,7 @@ Everything Partner Center asks for, ready to paste. Language: English (United St
 
 | Field | Value |
 |---|---|
-| Reserved name | **Capstan** (fallback if taken: **Capstan: GGUF Fit Checker**; then set `display_name` in `msix/identity.json` to match) |
+| Reserved name | **Capstan by VULLKI** (plain "Capstan" was taken). Store ID `9PDMZQ06VL6B`, link https://apps.microsoft.com/detail/9PDMZQ06VL6B. Must equal `display_name` in `msix/identity.json`. |
 | Package type | MSIX (`Capstan-<version>.msix`, x64). Microsoft signs it. |
 | Pricing | Free |
 | Markets | All markets |

@@ -67,7 +67,7 @@ Capstan answers that **before** the download. It reads each model's header strai
 
 ### Microsoft Store (recommended)
 
-Search for **Capstan** in the Microsoft Store, or use the link on the [releases page](https://github.com/Vullki/capstan/releases/latest). The Store build is signed by Microsoft and updates itself.
+[**Get Capstan from the Microsoft Store**](https://apps.microsoft.com/detail/9PDMZQ06VL6B) (listed as *Capstan by VULLKI*, Store ID `9PDMZQ06VL6B`). The Store build is signed by Microsoft and updates itself.
 
 ### Installer from GitHub
 

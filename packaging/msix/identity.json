@@ -1,0 +1,7 @@
+{
+  "_comment": "Capstan's Microsoft Store identity, from Partner Center > Capstan by VULLKI > Product identity (Store ID 9PDMZQ06VL6B). Not secret: every published package carries it. Package Family Name: Vullki.CapstanbyVULLKI_chmxt52reha4r",
+  "name": "Vullki.CapstanbyVULLKI",
+  "publisher": "CN=0B8985FB-C958-42F5-A1EA-DDDA3583E210",
+  "publisher_display": "Vullki",
+  "display_name": "Capstan by VULLKI"
+}
