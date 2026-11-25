@@ -2,6 +2,27 @@
 
 All notable changes to Capstan (called DΛЯK Pull before 1.2.0). The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and versions follow [Semantic Versioning](https://semver.org/).
 
+## [1.5.0] — 2026-11-25 · installer and Microsoft Store
+
+### Added
+- **Installs like a normal Windows app.** No Python, pip or git needed any more. Two ways in:
+  - **Microsoft Store** (MSIX): Microsoft signs it and keeps it updated, with no SmartScreen warning.
+  - **`Capstan-1.5.0-Setup.exe`** on GitHub Releases: a per-user install with no admin prompt, Start-menu shortcut, optional Desktop shortcut, and a clean uninstaller that keeps your settings and models. It isn't code-signed, so SmartScreen asks once ("More info → Run anyway").
+- **`packaging/`**: one command (`packaging\build.ps1`) builds the app bundle (PyInstaller), the installer (Inno Setup) and the Store package (MSIX with its logo set). Build dependencies are pinned in `packaging/requirements-lock.txt`.
+- **Hugging Face login in Settings.** Paste a read token to download gated models. It's checked with Hugging Face and saved where `hf auth login` keeps it, so the CLI and Capstan share it. Log out from the same place. (The installed app has no `hf` command, so this replaces "run `hf auth login`".)
+- **`PRIVACY.md`**: what Capstan sends, to whom, and what it stores (no telemetry, no analytics, no account).
+- **Tests** for the installed build: worker command, font migration, token check. 38 tests in all.
+
+### Changed
+- **Satoshi now lives in the data folder** (`%APPDATA%\Capstan\fonts`) instead of the app's own folder, which is read-only once installed. The UI loads it through the bridge. Existing copies are carried over on first run. It's still never bundled: the build stops if a Satoshi file ends up in the package.
+- **Downloads in the installed build** run as `Capstan.exe --worker` (there's no `python.exe` to start). From source they still run `python -m core.worker`.
+- Inside the Store package, Windows owns the app's taskbar identity, so Capstan no longer sets its own there.
+
+### Notes
+- In the Store build, Windows keeps the app's data in its own per-package folder (`%LOCALAPPDATA%\Packages\<Capstan package>\LocalCache\Roaming\Capstan`). Settings from a source or installer copy aren't shared with it.
+- Verified on Windows 11 (RTX 3060): the bundle on cold first run, the installer (install, launch, uninstall), and the MSIX installed as a packaged app with a real download and SHA-256 check inside it. Not yet tried on Windows 10, non-NVIDIA machines, or a second PC.
+- Seen once and not reproduced in two more cold starts: the first-ever launch of the bundle opened minimized.
+
 ## [1.4.1] — 2026-11-23 · imatrix files and empty headers
 
 ### Fixed
