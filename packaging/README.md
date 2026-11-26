@@ -77,4 +77,26 @@ Paste-ready listing text, age-rating answers and certification notes: [`store/li
 
 ## Updating
 
-Bump `VERSION` in `app/api.py`, add a CHANGELOG entry, run `build.ps1`, upload the new `.msix` in a new Store submission, and attach the new `Setup.exe` to a GitHub release. The installer's `AppId` in `installer/capstan.iss` must never change: Windows uses it to recognise an upgrade.
+Bump `VERSION` in `app/api.py`, add a CHANGELOG entry, run `build.ps1`, send the new `.msix` to the Store (below), and attach the new `Setup.exe` to a GitHub release. The installer's `AppId` in `installer/capstan.iss` must never change: Windows uses it to recognise an upgrade.
+
+### Store updates with the Microsoft Store Developer CLI (no portal)
+
+Set up once (2026-11-26): the account's Entra tenant is associated in Partner Center (**Account settings → Tenants**, which may only be reachable at `https://partner.microsoft.com/dashboard/account/v3/tenantmanagement#developer`), and an Entra application with the **Manager (Windows)** role exists under **User management → Microsoft Entra applications**. `msstore reconfigure --tenantId … --sellerId … --clientId … --clientSecret …` stores the credentials; keep the secret out of files and history. Turn telemetry off with `msstore settings --enableTelemetry false`.
+
+Each update (product ID `9PDMZQ06VL6B`):
+
+```powershell
+# 1. Upload the package to a new draft. Pass the .msix FILE: a folder makes msstore look for a source project.
+msstore publish C:\full\path\Capstan-<version>.msix -id 9PDMZQ06VL6B --noCommit --uploadTimeout 900
+
+# 2. Release notes: fetch the draft, edit Listings.en-us.BaseListing.ReleaseNotes, send it back as a FILE
+#    (inline JSON is mangled by Windows PowerShell 5.1 quoting).
+msstore submission get 9PDMZQ06VL6B | Out-File -Encoding utf8 submission.json
+msstore submission update 9PDMZQ06VL6B --payload submission.json
+
+# 3. Submit for certification, then wait for the result.
+msstore submission publish 9PDMZQ06VL6B
+msstore submission poll 9PDMZQ06VL6B
+```
+
+A draft started in the Partner Center **website** blocks the API ("Ingestion API can only update, delete, and commit submissions that are created through the API"): delete it in the portal first. Run `publish` before editing metadata, because it replaces any pending draft.
