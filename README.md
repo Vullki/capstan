@@ -1,4 +1,8 @@
 <p align="center">
+  <img src="docs/images/capstan-rig.jpg" width="100%" alt="Capstan running on a desktop PC with an RTX 3060">
+</p>
+
+<p align="center">
   <img src="design/icon/capstan-256.png" width="112" alt="Capstan icon">
 </p>
 

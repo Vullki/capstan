@@ -8,6 +8,7 @@ Repository and listing changes since 1.5.1; the app itself is unchanged.
 
 ### Changed
 - **README:** release, Windows, Python, NVIDIA and license badges; **Download for Windows** and **Run from source** buttons; Microsoft's official **Get it from Microsoft** badge, centred, 180 px wide.
+- **README banner** (`docs/images/capstan-rig.jpg`): Capstan on a desktop rig with an RTX 3060. The same image now opens the Product Hunt gallery, followed by a VULLKI desk scene and the two real screenshots, and it is the link-preview image of the story page.
 - **Screenshots retaken from 1.5.1** (`docs/screenshot-search.png` 1920×1080, `docs/screenshot-repo.png` 1440×1000), so they show the new title bar. Same views and same model as before. They also replaced the [Product Hunt](https://www.producthunt.com/posts/capstan) gallery and the images on the [story page](https://vullki.com/tools/capstan/).
 
 ### Added
