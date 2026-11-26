@@ -99,4 +99,11 @@ msstore submission publish 9PDMZQ06VL6B
 msstore submission poll 9PDMZQ06VL6B
 ```
 
+**Listing screenshots.** msstore has no command for an MSIX app's listing images, so `store/store_screenshots.py` calls the Store API itself with the credentials msstore saved (IDs from its `settings.json`, the secret read in memory from Credential Manager). It starts a new submission (a copy of the last published one), marks the old screenshots for deletion, uploads `docs/screenshot-search.png` and `docs/screenshot-repo.png`, and commits. Run `--check` first (read-only). It refuses while another submission is pending.
+
+```powershell
+python packaging\store\store_screenshots.py --check
+python packaging\store\store_screenshots.py
+```
+
 A draft started in the Partner Center **website** blocks the API ("Ingestion API can only update, delete, and commit submissions that are created through the API"): delete it in the portal first. Run `publish` before editing metadata, because it replaces any pending draft.
