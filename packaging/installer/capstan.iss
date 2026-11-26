@@ -58,8 +58,8 @@ Source: "{#SourceDir}\*"; DestDir: "{app}"; Flags: recursesubdirs createallsubdi
 
 [Icons]
 ; The AppUserModelID matches APP_ID in app\main.py, so the window groups under this shortcut.
-Name: "{autoprograms}\Capstan"; Filename: "{app}\Capstan.exe"; AppUserModelID: "BlackWolf.Capstan"; Comment: "Find Hugging Face models that fit your GPU"
-Name: "{autodesktop}\Capstan"; Filename: "{app}\Capstan.exe"; AppUserModelID: "BlackWolf.Capstan"; Tasks: desktopicon
+Name: "{autoprograms}\Capstan"; Filename: "{app}\Capstan.exe"; AppUserModelID: "VULLKI.Capstan"; Comment: "Find Hugging Face models that fit your GPU"
+Name: "{autodesktop}\Capstan"; Filename: "{app}\Capstan.exe"; AppUserModelID: "VULLKI.Capstan"; Tasks: desktopicon
 
 [Run]
 Filename: "{app}\Capstan.exe"; Description: "{cm:LaunchProgram,Capstan}"; Flags: nowait postinstall skipifsilent

@@ -662,7 +662,7 @@
             : '<input type="password" class="field field--sm" data-hf-token placeholder="hf_…" autocomplete="off" spellcheck="false"><button type="button" class="btn btn--ghost btn--sm" data-hf-login><i class="ph-duotone ph-sign-in"></i>Log in</button>'}</div></div>
         <div class="set"><div><div class="set__t">How the fit check works</div><div class="set__d">Capstan reads each model’s GGUF header from Hugging Face without downloading the file, then adds up weights, KV cache at your chosen context, and CUDA overhead. “Fits” keeps a 5% safety margin. It is an estimate: llama.cpp, LM Studio and Ollama differ slightly.</div></div><div></div></div>
       </div>
-      <p class="about">CΛPSTΛN ${esc(state.version)} · by DΛЯK · The BlackWolf · data in ${esc(state.dataDir || '')}</p>`;
+      <p class="about">CΛPSTΛN ${esc(state.version)} · by VULLKI · data in ${esc(state.dataDir || '')}</p>`;
     splitAll(pane);
     const conc = $('[data-conc]', pane);
     markSeg(conc, String(s.concurrency));

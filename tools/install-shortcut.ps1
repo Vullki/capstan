@@ -14,7 +14,7 @@ $ErrorActionPreference = 'Stop'
 $root    = Split-Path -Parent $PSScriptRoot
 $app     = Join-Path $root 'app'
 $icon    = Join-Path $app 'ui\assets\capstan.ico'
-$appId   = 'BlackWolf.Capstan'     # must match APP_ID in app/main.py
+$appId   = 'VULLKI.Capstan'     # must match APP_ID in app/main.py
 $pythonw = (Get-Command pythonw.exe -ErrorAction SilentlyContinue).Source
 if (-not $pythonw) { throw 'pythonw.exe not found on PATH. Install Python 3.11+ first.' }
 if (-not (Test-Path -LiteralPath $app)) { throw "App folder not found: $app" }

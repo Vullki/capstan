@@ -21,7 +21,7 @@ from api import Api  # noqa: E402
 from core import store  # noqa: E402
 
 TITLE = "Capstan"
-APP_ID = "BlackWolf.Capstan"   # must match the shortcut (tools/install-shortcut.ps1)
+APP_ID = "VULLKI.Capstan"   # must match the shortcut (tools/install-shortcut.ps1)
 ICON = os.path.join(HERE, "ui", "assets", "capstan.ico")
 
 

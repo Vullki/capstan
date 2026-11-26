@@ -72,11 +72,10 @@ button { cursor: pointer; }
   user-select: none;
   cursor: default;
 }
-.brand__mark, .brand__tag { pointer-events: none; }   /* the whole bar is a grab handle */
+.brand__mark { pointer-events: none; }   /* the whole bar is a grab handle */
 .brand { display: flex; align-items: center; gap: var(--sp-3); }
 .brand__icon { width: 20px; height: 20px; border-radius: 5px; pointer-events: none; }
 .brand__mark { font: 500 17px/1 var(--font-display); letter-spacing: .02em; }
-.brand__tag { font-size: 9.5px; letter-spacing: .4em; color: var(--silver-mid); }
 .winctl { display: flex; height: 100%; }
 .winctl__btn {
   width: 46px; height: 100%; border: 0; background: transparent; color: var(--silver-light);

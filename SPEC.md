@@ -2,7 +2,7 @@
 
 > Named **DΛЯK Pull** until 1.2.0.
 
-**What it is:** a Windows desktop app for finding and downloading models from Hugging Face, built for The BlackWolf's machine. It tells you whether a model will run on your PC *before* you download it.
+**What it is:** a Windows desktop app for finding and downloading models from Hugging Face, first built and tested on one RTX 3060 PC. It tells you whether a model will run on your PC *before* you download it.
 
 **Status:** v1.0.0 built 2026-11-23. See `CHANGELOG.md` for what was verified. The downloader differs from §2: it's our own resumable HTTP downloader, because `hf_hub_download` in huggingface_hub 2.x doesn't resume.
 

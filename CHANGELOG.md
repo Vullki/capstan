@@ -2,6 +2,13 @@
 
 All notable changes to Capstan (called DΛЯK Pull before 1.2.0). The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and versions follow [Semantic Versioning](https://semver.org/).
 
+## [1.5.1] — 2026-11-26 · VULLKI branding
+
+### Changed
+- **Capstan is a VULLKI product, and now says so everywhere.** The title bar shows just the CΛPSTΛN wordmark (the personal tagline next to it is gone), and the Settings about line reads `CΛPSTΛN <version> · by VULLKI`.
+- **LICENSE and README** credit VULLKI (© 2026 VULLKI, MIT). Docs and earlier changelog entries no longer carry the personal name.
+- **AppUserModelID** is now `VULLKI.Capstan` in the app, the installer shortcuts and `tools/install-shortcut.ps1`. The GitHub installer rewrites its shortcuts on upgrade; the Store build is unaffected (Windows sets its ID).
+
 ## [1.5.0] — 2026-11-25 · installer and Microsoft Store
 
 ### Added
@@ -78,7 +85,7 @@ All notable changes to Capstan (called DΛЯK Pull before 1.2.0). The format fol
 ## [1.3.0] — 2026-11-23 · open-source ready
 
 ### Added
-- **MIT license** (`LICENSE`), © 2026 The BlackWolf (DΛЯK), with third-party font and icon licenses listed.
+- **MIT license** (`LICENSE`), with third-party font and icon licenses listed.
 - **Satoshi fetched on first run** (`app/core/fonts.py`). Satoshi is a Fontshare closed-source font (ITF Free Font License) that may not be redistributed, so the repo no longer carries its files.
   - The app downloads the three weights it uses from Fontshare in the background, then swaps them in live without a restart.
   - Until then, or when offline, the UI uses the bundled Inter Display.
@@ -92,10 +99,10 @@ All notable changes to Capstan (called DΛЯK Pull before 1.2.0). The format fol
 
 ### Changed
 - **New name: Capstan** (wordmark **CΛPSTΛN**), ahead of an open-source release. A capstan is the winch that hauls heavy loads in under tension. "DΛЯK Pull" was too generic to find, and the new name was checked against PyPI and GitHub for collisions in AI tooling.
-- **System-facing names use plain `Capstan`:** window title, `Capstan.lnk`, AppUserModelID `BlackWolf.Capstan`, `Capstan.bat` and `Capstan (debug).bat`, icon files `capstan*`, and the project folder.
+- **System-facing names use plain `Capstan`:** window title, `Capstan.lnk`, the AppUserModelID, `Capstan.bat` and `Capstan (debug).bat`, icon files `capstan*`, and the project folder.
 - **Data folder:** `%APPDATA%\DARK Pull` → `%APPDATA%\Capstan`, moved automatically on first start. The WebView profile now lives inside it too. The override variable is `CAPSTAN_DATA` (was `DARKPULL_DATA`).
-- **Settings → about line:** shows `CΛPSTΛN <version> · by DΛЯK · The BlackWolf` and the real data folder.
-- **New app icon, designed by The BlackWolf:** a brushed-silver block lowered into a U-shaped bay, with two motion bars above it. It's the capstan pull, drawn literally.
+- **Settings → about line:** shows `CΛPSTΛN <version>` and the real data folder.
+- **New app icon:** a brushed-silver block lowered into a U-shaped bay, with two motion bars above it. It's the capstan pull, drawn literally.
   - Built on the design system's exact silver stops and brushed grain.
   - The full mark is for large sizes; `capstan-icon-small.svg` is a flatter, brighter mark that stays crisp at 16–32 px.
   - The set: `capstan.ico` (16–256), 13 PNG sizes (16–1024), and black/white glyphs (`design/icon/`).
@@ -107,7 +114,7 @@ All notable changes to Capstan (called DΛЯK Pull before 1.2.0). The format fol
 - **App icon:** a faceted brushed-silver wolf head whose snout narrows into a download chevron above a landing bar, with one crimson eye (`design/icon/`).
   - `dark-pull.svg` is the full mark; `dark-pull-small.svg` is a simplified mark for 16–32 px.
   - `render.py` renders both through headless Edge into PNGs and a multi-size `.ico` (16–256 px).
-- **Window and taskbar icon:** the window gets the wolf icon through `WM_SETICON`. The process sets its own AppUserModelID (`BlackWolf.DARKPull`), so the app has its own taskbar entry instead of grouping under Python.
+- **Window and taskbar icon:** the window gets the wolf icon through `WM_SETICON`. The process sets its own AppUserModelID, so the app has its own taskbar entry instead of grouping under Python.
 - **`tools/install-shortcut.ps1`:** creates a Desktop shortcut (add `-StartMenu` for a Start menu one) with the icon and the matching AppUserModelID. It uses the Unicode `IShellLinkW` API, because `WScript.Shell` saves paths as ANSI and broke the `DΛЯK Pull` folder name.
 - **Resizable frameless window:** invisible edges and corners. A Win32 loop (`GetCursorPos` + `SetWindowPos`) follows the cursor and keeps the 980×640 minimum.
 - **Title bar drag**, done the same way. Double-click maximizes; dragging a maximized window restores it under the cursor.

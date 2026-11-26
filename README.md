@@ -4,7 +4,7 @@
 
 <h1 align="center">Capstan</h1>
 
-<p align="center"><sub>CΛPSTΛN · by DΛЯK · The BlackWolf</sub></p>
+<p align="center"><sub>CΛPSTΛN · by VULLKI</sub></p>
 
 <p align="center">
   <b>Find and download models from Hugging Face, and know whether they'll run on your PC before you download them.</b><br>
@@ -146,9 +146,9 @@ docs/superpowers/    design specs and implementation plans
 
 ## Design
 
-The interface follows **Brushed Silver Noir**, The BlackWolf's design system: a pure black stage, glass surfaces, brushed-silver metal type, and almost no colour. The one exception is the crimson wolf eye, which marks "Won't run". Behind it all moves a live **Mist** shader, kept light (half resolution, 24 fps, paused when hidden) so the GPU stays free for your models. See [`design/DESIGN.md`](design/DESIGN.md).
+The interface follows **Brushed Silver Noir**, the VULLKI design system: a pure black stage, glass surfaces, brushed-silver metal type, and almost no colour. The one exception is the crimson wolf eye, which marks "Won't run". Behind it all moves a live **Mist** shader, kept light (half resolution, 24 fps, paused when hidden) so the GPU stays free for your models. See [`design/DESIGN.md`](design/DESIGN.md).
 
-The icon, by The BlackWolf, draws the capstan's job: a brushed-silver block lowered into its bay. Sources and every size are in [`design/icon/`](design/icon/).
+The icon draws the capstan's job: a brushed-silver block lowered into its bay. Sources and every size are in [`design/icon/`](design/icon/).
 
 ## Limitations
 
@@ -164,7 +164,7 @@ The icon, by The BlackWolf, draws the capstan's job: a brushed-silver block lowe
 
 ## License
 
-[MIT](LICENSE) © 2026 The BlackWolf (DΛЯK). Bundled fonts and icons keep their own licenses (see [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md)).
+[MIT](LICENSE) © 2026 VULLKI. Bundled fonts and icons keep their own licenses (see [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md)).
 
 ## Changelog
 
@@ -172,4 +172,4 @@ See [CHANGELOG.md](CHANGELOG.md).
 
 ---
 
-<p align="center"><sub>Made by <b>The BlackWolf</b> · #DΛЯK_MUSIC 🐺</sub></p>
+<p align="center"><sub>Made by <b>VULLKI</b> · <a href="https://vullki.com">vullki.com</a></sub></p>

@@ -3,7 +3,7 @@
 > **Version 2** (system version 1.1.0, 2026-11-04). This is `design.md` plus five learnings from its first real build, the DΛЯK Audio Model 01 demo. Nothing from v1 was removed or renamed; every addition is marked **New in v2**.
 >
 > A reusable design template for any project, in any stack: websites, apps, prototypes, tests, decks, Framer, React, plain HTML/CSS.
-> **Source:** structure and motion extracted layer by layer from the Portfolite Framer template. Text colors are The BlackWolf **brushed silver-charcoal**, sampled pixel by pixel from the #DARK_MUSIC artwork.
+> **Source:** structure and motion extracted layer by layer from the Portfolite Framer template. Text colors are a **brushed silver-charcoal**, sampled pixel by pixel from studio artwork.
 > **Signature:** motion first. Live backgrounds, blur reveals, heavy springs, tickers, a reactive cursor.
 
 **How to use this file:** Sections 1–9 are tool-agnostic and are the source of truth. Section 10 maps everything to Framer. Hand this file to any designer, developer or AI agent and it is enough to rebuild the theme.
@@ -115,7 +115,7 @@ Sampled from the letter pixels of six #DARK_MUSIC images. Neutral grey, with no 
 |---|---|
 | **H1 / H2 headlines** | Brushed-silver gradient fill (3.3) |
 | **H3 / H4, card titles** | Brushed-silver gradient, or flat `silver-light` at small sizes |
-| **Taglines, labels, badges** | Flat `silver-light`, UPPERCASE, wide tracking `0.25em`–`0.4em` (the "THE BLACKWOLF" treatment) |
+| **Taglines, labels, badges** | Flat `silver-light`, UPPERCASE, wide tracking `0.25em`–`0.4em` (the engraved tagline treatment) |
 | **Body and large body** | `text-body` |
 | **Small body, captions, meta** | `text-secondary` |
 | **Button labels** | `text-body` |
