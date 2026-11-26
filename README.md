@@ -7,6 +7,21 @@
 <p align="center"><sub>CΛPSTΛN · by VULLKI</sub></p>
 
 <p align="center">
+  <a href="../../releases/latest"><img alt="Release" src="https://img.shields.io/github/v/release/Vullki/capstan?label=release&labelColor=111111&color=3a3a3a"></a>
+  <img alt="Windows 10 | 11" src="https://img.shields.io/badge/Windows-10%20%7C%2011-3a3a3a?labelColor=111111">
+  <img alt="Python 3.14" src="https://img.shields.io/badge/Python-3.14-3a3a3a?logo=python&logoColor=E6E4DF&labelColor=111111">
+  <img alt="Fit lights: NVIDIA GPUs" src="https://img.shields.io/badge/fit%20lights-NVIDIA-3a3a3a?logo=nvidia&logoColor=E6E4DF&labelColor=111111">
+  <a href="LICENSE"><img alt="License: MIT" src="https://img.shields.io/github/license/Vullki/capstan?label=license&labelColor=111111&color=3a3a3a"></a>
+  <br>
+  <a href="../../releases/latest"><img alt="Download for Windows" src="https://img.shields.io/badge/Download%20for%20Windows-1c1c1c?logo=github&logoColor=E6E4DF"></a>
+  <a href="#from-source"><img alt="Run from source" src="https://img.shields.io/badge/Run%20from%20source-1c1c1c?logo=python&logoColor=E6E4DF"></a>
+</p>
+
+<p align="center">
+  <a href="https://apps.microsoft.com/detail/9PDMZQ06VL6B?mode=direct"><img src="https://get.microsoft.com/images/en-us%20dark.svg" width="200" alt="Get it from Microsoft"></a>
+</p>
+
+<p align="center">
   <b>Find and download models from Hugging Face, and know whether they'll run on your PC before you download them.</b><br>
   A Windows desktop app for people who run local models with llama.cpp, LM Studio or Ollama.
 </p>
