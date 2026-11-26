@@ -62,8 +62,13 @@ GGUF · Hugging Face · LLM · llama.cpp · local AI · VRAM · model downloader
 
 ## Screenshots (Desktop, PNG, at least 1366×768)
 
-1. `docs/screenshot-search.png` (1919×1078): "Search the Hub live, or paste any model link."
+1. `docs/screenshot-search.png` (1920×1080): "Search the Hub live, or paste any model link."
 2. `docs/screenshot-repo.png` (1440×1000): "Every quant gets a fit light for this PC, at your context length."
+
+Both were retaken from 1.5.1 on 2026-11-26 (title bar reads only "CAPSTAN"). The Store listing still shows the older
+pair with "THE BLACKWOLF" in the title bar: submission 2 was already in certification, and only a draft can change.
+Replace them in the next submission (API: put the PNGs in the submission ZIP, mark them `PendingUpload` and the old
+screenshots `PendingDelete`).
 
 ## Store logos
 
