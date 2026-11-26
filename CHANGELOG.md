@@ -16,6 +16,7 @@ All notable changes to Capstan (called DΛЯK Pull before 1.2.0). The format fol
 ### Released
 - **GitHub:** [v1.5.0](https://github.com/Vullki/capstan/releases/tag/v1.5.0) on 2026-11-25 with `Capstan-1.5.0-Setup.exe` (20,955,485 bytes, SHA-256 `e1a54855ae8f3702260c39dc7b58c3f89db4868c3e542e6f23a2623cff4def4a`, checked again after upload).
 - **Microsoft Store:** submission 1 sent on 2026-11-25 as **Capstan by VULLKI** (package `Vullki.CapstanbyVULLKI` 1.5.0.0, x64), free in all 240 markets, category Developer tools, set to publish as soon as it passes certification. Status at submission: *In certification*. What each Partner Center page needed is in `packaging/store/listing.md`.
+- **Product Hunt:** launch [Capstan](https://www.producthunt.com/posts/capstan) submitted on 2026-11-26, scheduled for 2026-12-01 at 00:00 Pacific (11:00 Bahrain). Free, open source, solo maker; links to the repo, the [story page](https://vullki.com/tools/capstan/) and this release. The Store link will be added once certification passes.
 - **Windows App Certification Kit** on the MSIX before submitting: overall result WARNING (passes), 22 of 24 tests. The two flags are explained in `packaging/README.md`.
 
 ### Changed
