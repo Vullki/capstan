@@ -2,7 +2,24 @@
 
 All notable changes to Capstan (called DΛЯK Pull before 1.2.0). The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and versions follow [Semantic Versioning](https://semver.org/).
 
+## [Unreleased]
+
+Repository and listing changes since 1.5.1; the app itself is unchanged.
+
+### Changed
+- **README:** release, Windows, Python, NVIDIA and license badges; **Download for Windows** and **Run from source** buttons; Microsoft's official **Get it from Microsoft** badge, centred, 180 px wide.
+- **Screenshots retaken from 1.5.1** (`docs/screenshot-search.png` 1920×1080, `docs/screenshot-repo.png` 1440×1000), so they show the new title bar. Same views and same model as before. They also replaced the [Product Hunt](https://www.producthunt.com/posts/capstan) gallery and the images on the [story page](https://vullki.com/tools/capstan/).
+
+### Added
+- **Store updates without the Partner Center website** (`packaging/README.md`): the verified Microsoft Store Developer CLI recipe (upload the `.msix`, edit release notes, submit, poll) and its pitfalls (a draft started on the website blocks the API; pass the `.msix` file, not a folder; send JSON as a file).
+- **`packaging/store/store_screenshots.py`**: replaces the Store listing screenshots through the Store submission API, since the CLI has no command for an MSIX app's images. It reuses the CLI's saved sign-in, never prints the secret, has a read-only `--check`, and refuses to run while another submission is pending. The listing still shows the pre-1.5.1 screenshots until it runs, after 1.5.1 is published.
+
 ## [1.5.1] — 2026-11-26 · VULLKI branding
+
+### Released
+- **GitHub:** [v1.5.1](https://github.com/Vullki/capstan/releases/tag/v1.5.1), marked Latest, on 2026-11-26 with `Capstan-1.5.1-Setup.exe` (20,953,846 bytes, SHA-256 `1fdde7d14c6b53eaf309174d8f336d54916476cab92c1ff99153ec94b359fc30`, checked again after upload).
+- **Microsoft Store:** submission 2 (`Capstan-1.5.1.msix`, 24,744,484 bytes) sent on 2026-11-26 at 21:48 AST through the Microsoft Store Developer CLI, with "What's new" notes, set to publish as soon as it passes. Pre-processing passed; status at 22:24 AST: *In certification*. The one pre-processing note is the expected `runFullTrust` capability warning, the same as 1.5.0. 1.5.0 itself passed certification on 2026-11-26 and is live on the Store (IARC 3+).
+- **Product Hunt:** the 2026-12-01 launch now links the Store listing and `releases/latest`, and its first comment points to the Store.
 
 ### Changed
 - **Capstan is a VULLKI product, and now says so everywhere.** The title bar shows just the CΛPSTΛN wordmark (the personal tagline next to it is gone), and the Settings about line reads `CΛPSTΛN <version> · by VULLKI`.
