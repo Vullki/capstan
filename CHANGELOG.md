@@ -9,11 +9,11 @@ Repository and listing changes since 1.5.1; the app itself is unchanged.
 ### Changed
 - **README:** release, Windows, Python, NVIDIA and license badges; **Download for Windows** and **Run from source** buttons; Microsoft's official **Get it from Microsoft** badge, centred, 180 px wide.
 - **README banner** (`docs/images/capstan-rig.jpg`): Capstan on a desktop rig with an RTX 3060. The same image now opens the Product Hunt gallery, followed by a VULLKI desk scene and the two real screenshots, and it is the link-preview image of the story page.
-- **Screenshots retaken from 1.5.1** (`docs/screenshot-search.png` 1920×1080, `docs/screenshot-repo.png` 1440×1000), so they show the new title bar. Same views and same model as before. They also replaced the [Product Hunt](https://www.producthunt.com/posts/capstan) gallery and the images on the [story page](https://vullki.com/tools/capstan/).
+- **Screenshots retaken from 1.5.1** (`docs/screenshot-search.png` 1920×1080, `docs/screenshot-repo.png` 1440×1000), so they show the new title bar. Same views and same model as before. They replaced the screenshots on the [Microsoft Store listing](https://apps.microsoft.com/detail/9PDMZQ06VL6B), the [Product Hunt](https://www.producthunt.com/posts/capstan) gallery and the images on the [story page](https://vullki.com/tools/capstan/).
 
 ### Added
 - **Store updates without the Partner Center website** (`packaging/README.md`): the verified Microsoft Store Developer CLI recipe (upload the `.msix`, edit release notes, submit, poll) and its pitfalls (a draft started on the website blocks the API; pass the `.msix` file, not a folder; send JSON as a file).
-- **`packaging/store/store_screenshots.py`**: replaces the Store listing screenshots through the Store submission API, since the CLI has no command for an MSIX app's images. It reuses the CLI's saved sign-in, never prints the secret, has a read-only `--check`, and refuses to run while another submission is pending. Run on 2026-11-27 right after 1.5.1 went live: Store submission 3 (screenshots only) committed at 07:30 AST and in certification minutes later.
+- **`packaging/store/store_screenshots.py`**: replaces the Store listing screenshots through the Store submission API, since the CLI has no command for an MSIX app's images. It reuses the CLI's saved sign-in, never prints the secret, has a read-only `--check`, and refuses to run while another submission is pending. Run on 2026-11-27 right after 1.5.1 went live: Store submission 3 (screenshots only) committed at 07:30 AST, passed certification and published the same morning: the live listing now has only the two 1.5.1 screenshots, captions included (checked with `--check` at 10:10 AST).
 
 ## [1.5.1] — 2026-11-26 · VULLKI branding
 

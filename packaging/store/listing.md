@@ -66,7 +66,7 @@ GGUF · Hugging Face · LLM · llama.cpp · local AI · VRAM · model downloader
 2. `docs/screenshot-repo.png` (1440×1000): "Every quant gets a fit light for this PC, at your context length."
 
 Both were retaken from 1.5.1 on 2026-11-26 (title bar reads only "CAPSTAN") and sent to the Store on 2026-11-27 as
-submission 3 (screenshots only) with `store_screenshots.py`.
+submission 3 (screenshots only) with `store_screenshots.py`; it passed certification and went live the same morning.
 
 ## Store logos
 
