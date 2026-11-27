@@ -65,10 +65,8 @@ GGUF · Hugging Face · LLM · llama.cpp · local AI · VRAM · model downloader
 1. `docs/screenshot-search.png` (1920×1080): "Search the Hub live, or paste any model link."
 2. `docs/screenshot-repo.png` (1440×1000): "Every quant gets a fit light for this PC, at your context length."
 
-Both were retaken from 1.5.1 on 2026-11-26 (title bar reads only "CAPSTAN"). The Store listing still shows the older
-pair with the pre-1.5.1 title bar: submission 2 was already in certification, and only a draft can change.
-Replace them in the next submission (API: put the PNGs in the submission ZIP, mark them `PendingUpload` and the old
-screenshots `PendingDelete`).
+Both were retaken from 1.5.1 on 2026-11-26 (title bar reads only "CAPSTAN") and sent to the Store on 2026-11-27 as
+submission 3 (screenshots only) with `store_screenshots.py`.
 
 ## Store logos
 
